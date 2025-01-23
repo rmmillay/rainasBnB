@@ -1,6 +1,7 @@
 # `FlairBnB`
 
 ## Database Schema Design
+![db schema](https://github.com/user-attachments/assets/ac69545c-205d-4cf5-88a2-f4782e139fd7)
 
 `<insert database schema design here>`
 
