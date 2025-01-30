@@ -29,3 +29,39 @@ router.get('/set-token-cookie', async (_req, res) => {
 });
 
 // ...
+
+// backend/routes/api/index.js
+// ...
+
+// GET /api/restore-user
+const { restoreUser } = require('../../utils/auth.js');
+
+router.use(restoreUser);
+
+router.get(
+  '/restore-user',
+  (req, res) => {
+    return res.json(req.user);
+  }
+);
+
+// ...
+
+// backend/routes/api/index.js
+// ...
+
+router.use(restoreUser);
+
+// ...
+
+// GET /api/require-auth
+const { requireAuth } = require('../../utils/auth.js');
+router.get(
+  '/require-auth',
+  requireAuth,
+  (req, res) => {
+    return res.json(req.user);
+  }
+);
+
+// ...
