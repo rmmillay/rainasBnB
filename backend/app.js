@@ -41,10 +41,8 @@ app.use(
 const routes = require('./routes');
 // ...
 app.use(routes); // Connect all the routes
-// backend/app.js
-// ...
-// backend/app.js
-// ...
+
+// -----ERROR HANDLING----
 
 // Catch unhandled requests and forward to error handler.
 app.use((req, res, next) => {
@@ -55,6 +53,7 @@ app.use((req, res, next) => {
   next(err);
 });
 
+//Process sequelize errors
 app.use((err, _req, _res, next) => {
   // check if error is a Sequelize error:
   if (err instanceof ValidationError) {

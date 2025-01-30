@@ -1,23 +1,34 @@
-// backend/routes/api/index.js
+// ----IMPORTS----
+// --Express imports
 const router = require('express').Router();
+const sessionRouter = require('./session.js');
+const usersRouter = require('./users.js');
 
-// backend/routes/api/index.js
-// ...
+// --Sequelize imports
+const { User } = require('../../db/models');
 
-router.post('/test', function (req, res) {
-    res.json({ requestBody: req.body });
+// -- Middleware Imports-- Condensed to one line of code
+const { restoreUser, setTokenCookie, requireAuth } = require('../../utils/auth.js');
+//const { setTokenCookie } = require('../../utils/auth.js');
+//const { requireAuth } = require('../../utils/auth.js');
+
+// --Middleware--
+router.use(restoreUser);
+
+// --Routes for API--
+router.use('/session', sessionRouter);
+router.use('/users', usersRouter);
+router.post('/test', (req, res) => {
+  res.json({ requestBody: req.body });
 });
 
-// ...
 
-module.exports = router;
-
-// backend/routes/api/index.js
-// ...
+// --Routes--
+router.post('/test', function (req, res) {
+  res.json({ requestBody: req.body });
+});
 
 // GET /api/set-token-cookie
-const { setTokenCookie } = require('../../utils/auth.js');
-const { User } = require('../../db/models');
 router.get('/set-token-cookie', async (_req, res) => {
   const user = await User.findOne({
     where: {
@@ -28,16 +39,7 @@ router.get('/set-token-cookie', async (_req, res) => {
   return res.json({ user: user });
 });
 
-// ...
-
-// backend/routes/api/index.js
-// ...
-
 // GET /api/restore-user
-const { restoreUser } = require('../../utils/auth.js');
-
-router.use(restoreUser);
-
 router.get(
   '/restore-user',
   (req, res) => {
@@ -45,17 +47,7 @@ router.get(
   }
 );
 
-// ...
-
-// backend/routes/api/index.js
-// ...
-
-router.use(restoreUser);
-
-// ...
-
 // GET /api/require-auth
-const { requireAuth } = require('../../utils/auth.js');
 router.get(
   '/require-auth',
   requireAuth,
@@ -64,4 +56,4 @@ router.get(
   }
 );
 
-// ...
+module.exports = router;
