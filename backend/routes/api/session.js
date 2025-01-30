@@ -2,15 +2,33 @@
 const express = require('express');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
+
 // --Security Imports--
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
+
+// -- utilities Imports--
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
 
 // --Sequelize Imports--
 const { User } = require('../../db/models');
 
 const router = express.Router();
+
+// Protection for login input data
+const validateLogin = [
+    check('credential')
+        .exists({ checkFalsy: true })
+        .notEmpty()
+        .withMessage('Please provide a valid email or username.'),
+    check('password')
+        .exists({ checkFalsy: true })
+        .withMessage('Please provide a password.'),
+    handleValidationErrors
+];
+
 // Log in
-router.post('/', async (req, res, next) => {
+router.post('/', validateLogin, async (req, res, next) => {
     const { credential, password } = req.body;
 
     const user = await User.unscoped().findOne({
@@ -41,8 +59,7 @@ router.post('/', async (req, res, next) => {
     return res.json({
         user: safeUser
     });
-}
-);
+});
 
 // Log out
 router.delete('/', (_req, res) => {
