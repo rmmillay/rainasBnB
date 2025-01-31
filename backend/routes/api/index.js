@@ -1,8 +1,8 @@
 // ----IMPORTS----
 // --Express imports
+const usersRouter = require('./users.js');
 const router = require('express').Router();
 const sessionRouter = require('./session.js');
-const usersRouter = require('./users.js');
 
 // --Sequelize imports
 const { User } = require('../../db/models');
@@ -40,20 +40,15 @@ router.get('/set-token-cookie', async (_req, res) => {
 });
 
 // GET /api/restore-user
-router.get(
-  '/restore-user',
-  (req, res) => {
-    return res.json(req.user);
-  }
+router.get('/restore-user', (req, res) => {
+  return res.json(req.user);
+}
 );
 
 // GET /api/require-auth
-router.get(
-  '/require-auth',
-  requireAuth,
-  (req, res) => {
-    return res.json(req.user);
-  }
+router.get('/require-auth', requireAuth, (req, res) => {
+  return res.json(req.user);
+}
 );
 
 module.exports = router;
