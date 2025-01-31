@@ -1,21 +1,30 @@
+//--Imports--
 const express = require('express');
 require('express-async-errors');
+const routes = require('./routes');
+
+// --Security Imports--
 const morgan = require('morgan');
 const cors = require('cors');
 const csurf = require('csurf');
 const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
 
+//--Utility Imports--
+const cookieParser = require('cookie-parser');
 const { environment } = require('./config');
+
 const isProduction = environment === 'production';
 const { ValidationError } = require('sequelize');
 
+// --Express--
 const app = express();
-app.use(morgan('dev'));
-app.use(cookieParser());
-app.use(express.json());
 
-// Security Middleware
+// --Middlewares-- 
+app.use(morgan('dev')); // security
+app.use(cookieParser());// parse cookies from headers
+app.use(express.json()); //allows use of json in req/res
+
+// --Security Middleware--
 if (!isProduction) {
   // enable cors only in development
   app.use(cors());
@@ -37,9 +46,8 @@ app.use(
   })
 );
 
-// backend/app.js
-const routes = require('./routes');
-// ...
+//----------------Middle ware must be used above this line-------
+// --Routes--
 app.use(routes); // Connect all the routes
 
 // -----ERROR HANDLING----
