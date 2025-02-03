@@ -12,17 +12,18 @@ const helmet = require('helmet');
 //--Utility Imports--
 const cookieParser = require('cookie-parser');
 const { environment } = require('./config');
+const { ValidationError } = require('sequelize');
+const sequelize = require('./config/database'); // Import the database configuration
 
 const isProduction = environment === 'production';
-const { ValidationError } = require('sequelize');
 
 // --Express--
 const app = express();
 
 // --Middlewares-- 
 app.use(morgan('dev')); // security
-app.use(cookieParser());// parse cookies from headers
-app.use(express.json()); //allows use of json in req/res
+app.use(cookieParser()); // parse cookies from headers
+app.use(express.json()); // allows use of json in req/res
 
 // --Security Middleware--
 if (!isProduction) {
@@ -61,7 +62,7 @@ app.use((req, res, next) => {
   next(err);
 });
 
-//Process sequelize errors
+// Process sequelize errors
 app.use((err, _req, _res, next) => {
   // check if error is a Sequelize error:
   if (err instanceof ValidationError) {
@@ -85,6 +86,16 @@ app.use((err, _req, res, _next) => {
     errors: err.errors,
     stack: isProduction ? null : err.stack
   });
+});
+
+// Synchronize the database and start the server
+sequelize.sync().then(() => {
+  const PORT = process.env.PORT || 8000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}).catch((error) => {
+  console.error('Unable to sync the database:', error);
 });
 
 module.exports = app;
