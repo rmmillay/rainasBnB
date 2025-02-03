@@ -9,7 +9,6 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Spots', {
-      
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -80,11 +79,6 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-
-      // avgRating: {
-      //   type: Sequelize.DECIMAL, //-> don't put aggregate data on db. 
-      //   allowNull: false
-      // },
 
     }, options);
   },

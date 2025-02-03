@@ -1,5 +1,10 @@
-// Imports
-const express = require('express');
+
+// const router = require(".");
+
+// router.get('/',)
+
+//Imports
+const express = require('express')
 const bcrypt = require('bcryptjs');
 
 // --Utility Imports--
@@ -166,5 +171,6 @@ router.get('/spot/:id', (req, res, next) => {
   res.send('hello, spot!');
   next();
 });
+
 
 module.exports = router;
