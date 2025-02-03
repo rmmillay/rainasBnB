@@ -1,60 +1,63 @@
-// const router = require(".");
-
-// router.get('/',)
 
 //Imports
 const express = require('express')
-const bcrypt = require('bcryptjs');
+const router = express.Router();
+
+const { getAllSpots } = require('../../config/getAllSpots');
+//-> !?
+
 
 // --Utility Imports--
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-
+ 
 // --Sequelize Imports--
-const { User, Sequelize } = require('../../db/models');
+const { Spot } = require('../../db/models');
 
 
-const router = express.Router();
-// -- Proctects incoming Data for sign up route--
-const validateSignup = [
-    check('email')
-        .exists({ checkFalsy: true })
-        .isEmail()
-        .withMessage('Please provide a valid email.'),
-    check('username')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 4 })
-        .withMessage('Please provide a username with at least 4 characters.'),
-    check('username')
-        .not()
-        .isEmail()
-        .withMessage('Username cannot be an email.'),
-    check('password')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Password must be 6 characters or more.'),
-    handleValidationErrors
-];
-
-// Sign up
-router.post('/', validateSignup, async (req, res) => {
-    const { email, password, username } = req.body;
-    const hashedPassword = bcrypt.hashSync(password);
-    const user = await User.create({ email, username, hashedPassword });
-
-    const safeUser = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-    };
-
-    await setTokenCookie(res, safeUser);
-
-    return res.json({
-        user: safeUser
+// --Create New Spot--
+router.post('/', async (req, res) => {
+  try {
+    const { ownerId, address } = req.body;
+    
+    const spot = await Spot.create({
+      ownerId,
+      address
     });
-}
-);
+    
+      await setTokenCookie(res);
+
+      return res.status(201).json(spot);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// --Get All Spots--
+router.get('/', async (req, res) => {
+  try {
+    const spots = await getAllSpots();
+    res.json(spots);
+  } catch (error) {
+      res.status(500).json({ error: error.message }); // ?
+  }
+});
+
+
+// --Get Spot By Id--
+router.get('/:id', async (req, res) => {
+   try {
+     const spot = await Spot.findByPk(req.params.id);
+     if (!spot) {
+        return res.status(404).json({ error: "Spot not found"});
+     }
+      res.json(spot);
+   } catch (error) {
+       res.status(500).json({ error: error.message });
+  }
+
+});
 
 module.exports = router;
