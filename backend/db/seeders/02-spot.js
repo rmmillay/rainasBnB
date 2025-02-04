@@ -19,7 +19,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await Spot.bulkCreate([
+    await queryInterface.bulkInsert ( 'Spots', [ 
       {
 
         
@@ -33,8 +33,6 @@ module.exports = {
         name: "App Academy",
         description: "Place where web developers are created",
         price: 123,
-        // avgRating: 4.5,
-        // previewImage: "image url",
       },
 
 

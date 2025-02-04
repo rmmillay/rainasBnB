@@ -2,17 +2,17 @@
 const { Model, DataTypes } = require('sequelize');
 
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => { 
   class Spot extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * The `models/index` file will call this method automatically. 
      */
     static associate(models) {
-      // define association here
+      // define association here 
     }
-  }
+  } 
 
   Spot.init(
     {
@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   },
 
-    name: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
@@ -101,23 +101,23 @@ module.exports = (sequelize, DataTypes) => {
     },
   },
 
-  avgRating: {
-    type: DataTypes.DECIMAL,
-    allowNull: true,
-    validate: {
-     min: 0,
-     max: 10,
-    },
-  },
+  // avgRating: {
+  //   type: DataTypes.DECIMAL,
+  //   allowNull: true,
+  //   validate: {
+  //    min: 0,
+  //    max: 10,
+  //   },
+  // },
 
-  previewImage: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-     len: [3, 256]
-    },
-  },
+  // previewImage: {
+  //   type: DataTypes.STRING,
+  //   allowNull: false,
+  //   unique: true,
+  //   validate: {
+  //    len: [3, 256]
+  //   },
+  // },
 },
 
   {

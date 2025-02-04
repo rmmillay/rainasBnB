@@ -1,11 +1,9 @@
 'use strict';
 
-// let options = {};
-// if (process.env.NODE_ENV === 'production') {
-//   options.schema = process.env.SCHEMA;  // define your schema in options object
-// }
-
-
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA;  // define your schema in options object
+}
 
 /* @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -106,12 +104,12 @@ module.exports = {
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    let options = {}; // ?
-    if (process.env.NODE_ENV === 'production'){ // ?
-      options.schema = process.env.SCHEMA;
-    } // ?
-    //options.tableName = "Spots";
-    // return queryInterface.dropTable(options);
+    // let options = {}; // ?
+    // if (process.env.NODE_ENV === 'production'){ // ?
+    //   options.schema = process.env.SCHEMA;
+    // } // ?
+    options.tableName = "Spots";
+    return queryInterface.dropTable(options);
     await queryInterface.dropTable('Spots');
   }
 };
