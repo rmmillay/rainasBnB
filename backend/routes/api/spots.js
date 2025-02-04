@@ -1,6 +1,6 @@
-// Imports
-const express = require('express');
-const bcrypt = require('bcryptjs');
+//Imports
+const express = require('express')
+const router = express.Router();
 
 // --Utility Imports--
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
@@ -115,6 +115,7 @@ router.use('/spot/:id', (req, res, next) => {
 }, (req, res, next) => {
   console.log('Request Type:', req.method);
   next();
+
 });
 
 // predicate the router with a check and bail out when needed
