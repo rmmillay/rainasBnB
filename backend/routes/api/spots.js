@@ -3,10 +3,6 @@
 const express = require('express')
 const router = express.Router();
 
-const { getAllSpots } = require('../../config/getAllSpots');
-//-> !?
-
-
 // --Utility Imports--
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { check } = require('express-validator');
@@ -38,7 +34,7 @@ router.post('/', async (req, res) => {
 // --Get All Spots--
 router.get('/', async (req, res) => {
   try {
-    const spots = await getAllSpots();
+    const spots = await Spot.findAll();
     res.json(spots);
   } catch (error) {
       res.status(500).json({ error: error.message }); // ?
