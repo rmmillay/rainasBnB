@@ -90,8 +90,6 @@ module.exports = {
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
 
-<<<<<<< HEAD
-=======
       // avgRating: {
       //   type: Sequelize.DECIMAL, //-> don't put aggregate data on db. 
       //   allowNull: false,
@@ -103,7 +101,6 @@ module.exports = {
       //   allowNull: false
       // },
 
->>>>>>> staging
     }, options);
   },
   async down(queryInterface, Sequelize) {
