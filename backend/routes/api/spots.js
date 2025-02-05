@@ -68,10 +68,9 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
     description,
     price
 });
-    
     return res.status(201).json(spot);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
 });
 
@@ -83,7 +82,7 @@ router.get('/', async (req, res) => {
     const spots = await Spot.findAll();
     return res.json(spots);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: "Incorrect details for your Spot. Please use accurate information."});
   }
 });
 
@@ -98,6 +97,20 @@ router.get('/:id', async (req, res) => {
      return res.json(spot);
    } catch (error) {
      return res.status(500).json({ error: error.message });
+  }
+});
+
+// --Get Spots under Owner Id--
+router.get('/currentUser', requireAuth, async (req, res) => {
+  try {
+   const ownerId = req.user.id;
+   const spot = await Spot.findAll({
+    where: {ownerId}
+   })
+    
+    return res.status(200).json(spot);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 });
 
