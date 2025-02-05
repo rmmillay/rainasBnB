@@ -1,6 +1,7 @@
-//Imports
-const express = require('express')
+// --Imports--
+const express = require('express');
 const bcrypt = require('bcryptjs');
+const router = express.Router();
 
 // --Utility Imports--
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
@@ -8,11 +9,11 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 // --Sequelize Imports--
-const { User, Sequelize } = require('../../db/models');
+const { User } = require('../../db/models');
 
 
-const router = express.Router();
-// -- Proctects incoming Data for sign up route--
+
+// --Middleware TO Protect Incoming Data For Sign Up Route--
 const validateSignup = [
     check('email')
         .exists({ checkFalsy: true })
@@ -33,10 +34,12 @@ const validateSignup = [
     handleValidationErrors
 ];
 
-// Sign up
+// --New User Sign Up--
 router.post('/', validateSignup, async (req, res) => {
+  try {
     const { email, password, username } = req.body;
-    const hashedPassword = bcrypt.hashSync(password);
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({ email, username, hashedPassword });
 
     const safeUser = {
@@ -46,58 +49,48 @@ router.post('/', validateSignup, async (req, res) => {
     };
 
     await setTokenCookie(res, safeUser);
+    return res.status(201).json({ user: safeUser });
 
-    return res.json({
-        user: safeUser
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ error: 'Already in use' });
+    }
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+// --Get All Users--
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'email', 'username']
     });
-}
-);
+    return res.json({ users });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 
-// a middleware function with no mount path. This code is executed for every request to the router
-router.use((req, res, next) => {
-    console.log('Time:', Date.now())
-    next()
-  })
+// --GET Requests To The /user/:id Path--
+router.get('/user/:id', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: ['id', 'email', 'username']
+    });
 
-// a middleware sub-stack that handles GET requests to the /user/:id path
-router.get('/users/:id', (req, res, next) => {
-    // if the user ID is 0, skip to the next router
-    if (req.params.id === '0') next('route')
-    // otherwise pass control to the next middleware function in this stack
-    else next()
-  }, (req, res, next) => {
-    // render a regular page
-    res.render('regular') 
-    next()
-  })
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-  // a middleware sub-stack shows request info for any type of HTTP request to the /user/:id path
-  router.use('/user/:id', (req, res, next) => {
-    console.log('Request URL:', req.originalUrl)
-    next()
-  }, (req, res, next) => {
-    console.log('Request Type:', req.method)
-    next()
-  })
+    return res.json({ user });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
   
 
-// predicate the router with a check and bail out when needed
-router.use((req, res, next) => {
-    if (!req.headers['x-auth']) return next('router')
-    next()
-  })
-
- // handler for the /user/:id path, which renders a special page
-router.get('/user/:id', (req, res, next) => {
-    console.log(req.params.id)
-    res.render('special')
-  })
-
-// handler for the /user/:id path, which sends a special response
-router.get('/user/:id', (req, res, next) => {
-    res.send('hello, user!') 
-    next()
-  })
 
 module.exports = router;

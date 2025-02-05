@@ -1,22 +1,17 @@
-
-// const router = require(".");
-
-// router.get('/',)
-
 //Imports
 const express = require('express')
-const bcrypt = require('bcryptjs');
+const router = express.Router();
 
 // --Utility Imports--
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
+const { requireAuth } = require('../../utils/auth');
 const { check, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 // --Sequelize Imports--
-const { Spot, Sequelize } = require('../../db/models');
-const router = express.Router();
+const { Spot } = require('../../db/models');
 
-// -- Protects incoming Data for spot creation route--
+
+//--Middleware to protect incoming Data for spot creation route-- 
 const validateSpot = [
   check('address')
     .exists({ checkFalsy: true })
@@ -50,127 +45,60 @@ const validateSpot = [
     .withMessage('Please provide a valid price.'),
   handleValidationErrors
 ];
+  
 
-// Create a new spot
+
+
+
+// --Create New Spot--
 router.post('/', requireAuth, validateSpot, async (req, res) => {
-    const spot = await Spot.create({
-        ownerId,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price
-      } = req.body
-    );
-
-  // Check for validation errors
-  const validationErrors = validationResult(req);
-  if (!validationErrors.isEmpty()) {
-    return res.status(400).json({ errors: validationErrors.array() });
-  }
-
-  // Set token cookie
-  await setTokenCookie(res, req.user);
-
-  // Return the new spot data
-  return res.json({
-    id: spot.id,
-    ownerId: spot.ownerId,
-    address: spot.address,
-    city: spot.city,
-    state: spot.state,
-    country: spot.country,
-    lat: spot.lat,
-    lng: spot.lng,
-    name: spot.name,
-    description: spot.description,
-    price: spot.price,
-    createdAt: spot.createdAt,
-    updatedAt: spot.updatedAt
-  });
-});
-
-/* code for finding spots below */
-
-// const spots = await Spot.findAll();
-// console.log(spots.every(spot => user instanceof User)); // true
-// console.log('All users:', JSON.stringify(users, null, 2));
-
-// Model.findAll({
-//     attributes: ['foo', 'bar'],
-//   });
-
-// router.get('/', (req, res, next) => {
-//     res.send('all spots')
-//     next()
-// });
-
-// router.get('/', async (req, res, next) => {
-//     let {ownerId} = req.query;
-//     res.send('spots')
-// });
-
-// Route to get all spots
-router.get('/', async (req, res) => {
   try {
-    // Fetch all spots from the database
-    const spots = await Spot.findAll();
-    // Return the spots in the response with a 200 status code
-    return res.status(200).json(spots);
+   const { address, city, state, country, lat, lng, name, description, price } = req.body;
+   const ownerId = req.user.id;
+
+   const spot = await Spot.create({
+    ownerId,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price
+});
+    
+    return res.status(201).json(spot);
   } catch (error) {
-    // If there's an error, return a 500 status code and the error message
     return res.status(500).json({ error: error.message });
   }
 });
 
-// a middleware function with no mount path. This code is executed for every request to the router
-router.use((req, res, next) => {
-  console.log('Time:', Date.now());
-  next();
+
+
+// --Get All Spots--
+router.get('/', async (req, res) => {
+  try {
+    const spots = await Spot.findAll();
+    return res.json(spots);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 });
 
-// a middleware sub-stack that handles GET requests to the /spot/:id path
-router.get('/spot/:id', (req, res, next) => {
-  // if the spot ID is 0, skip to the next router
-  if (req.params.id === '0') next('route');
-  // otherwise pass control to the next middleware function in this stack
-  else next();
-}, (req, res, next) => {
-  // render a regular page
-  res.render('regular');
-  next();
-});
 
-// a middleware sub-stack shows request info for any type of HTTP request to the /spot/:id path
-router.use('/spot/:id', (req, res, next) => {
-  console.log('Request URL:', req.originalUrl);
-  next();
-}, (req, res, next) => {
-  console.log('Request Type:', req.method);
-  next();
+// --Get Spot By Id--
+router.get('/:id', async (req, res) => {
+   try {
+     const spot = await Spot.findByPk(req.params.id);
+     if (!spot) {
+        return res.status(404).json({ error: "Spot not found"});
+     }
+     return res.json(spot);
+   } catch (error) {
+     return res.status(500).json({ error: error.message });
+  }
 });
-
-// predicate the router with a check and bail out when needed
-router.use((req, res, next) => {
-  if (!req.headers['x-auth']) return next('router');
-  next();
-});
-
-// handler for the /spot/:id path, which renders a special page
-router.get('/spot/:id', (req, res, next) => {
-  console.log(req.params.id);
-  res.render('special');
-});
-
-// handler for the /spot/:id path, which sends a special response
-router.get('/spot/:id', (req, res, next) => {
-  res.send('hello, spot!');
-  next();
-});
-
 
 module.exports = router;

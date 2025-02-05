@@ -5,20 +5,30 @@ if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 
-/** @type {import('sequelize-cli').Migration} */
+/* @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Spots', {
+    let options = {};
+    if (process.env.NODE_ENV === 'production') {
+    options.schema = process.env.SCHEMA;  // define your schema in options object
+  }
+    
+  await queryInterface.createTable('Spots', {
+
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true, 
         type: Sequelize.INTEGER
       },
 
-      ownerId: {
+      ownerId: { 
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        // references: {
+        //   model: 'Users',
+        //   key: 'id'
+      // }
       },
     
       address: {
@@ -80,10 +90,30 @@ module.exports = {
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
 
+<<<<<<< HEAD
+=======
+      // avgRating: {
+      //   type: Sequelize.DECIMAL, //-> don't put aggregate data on db. 
+      //   allowNull: false,
+          //defaultvalue: 0,
+      // },
+
+      // previewImage: {
+      //   type: Sequelize.STRING,
+      //   allowNull: false
+      // },
+
+>>>>>>> staging
     }, options);
   },
   async down(queryInterface, Sequelize) {
+    // let options = {}; // ?
+    // if (process.env.NODE_ENV === 'production'){ // ?
+    //   options.schema = process.env.SCHEMA;
+    // } // ?
     options.tableName = "Spots";
     return queryInterface.dropTable(options);
+    await queryInterface.dropTable('Spots');
   }
 };
+

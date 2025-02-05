@@ -10,6 +10,7 @@ module.exports = (sequelize) => {
 
   User.init(
     {
+<<<<<<< HEAD
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -38,6 +39,18 @@ module.exports = (sequelize) => {
         validate: {
           len: [60, 60],
         },
+=======
+    username: { 
+     type: DataTypes.STRING,  
+     allowNull: false,
+     unique: true,
+     validate: {
+       len: [4, 30],
+       isNotEmail(value) {
+        if (Validator.isEmail(value)) {
+          throw new Error('Cannot be an email.');
+        }
+>>>>>>> staging
       },
     },
     {

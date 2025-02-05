@@ -1,17 +1,18 @@
 'use strict';
-const { Model, Validator } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
+
+module.exports = (sequelize, DataTypes) => { 
   class Spot extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * The `models/index` file will call this method automatically. 
      */
     static associate(models) {
-      // define association here
+      // define association here 
     }
-  }
+  } 
 
   Spot.init(
     {
@@ -19,8 +20,6 @@ module.exports = (sequelize, DataTypes) => {
      type: DataTypes.INTEGER, 
      allowNull: false,
      unique: true,
-     validate: {
-      },
     },
   
   address: {
@@ -28,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     allowNull: false,
     unique: true,
     validate: {
-     len: [3, 256]
+     len: [3, 256],
     },
   },
 
@@ -36,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-     len: [3, 256]
+     len: [3, 256],
     },
   },
 
@@ -44,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-     len: [3, 256]
+     len: [3, 256],
     },
   },
 
@@ -61,7 +60,9 @@ module.exports = (sequelize, DataTypes) => {
     allowNull: false,
     unique: true,
     validate: {
-     len: [3, 256]
+      isDecimal: true,
+      min: -90,
+      max: 90,
     },
   },
 
@@ -70,11 +71,13 @@ module.exports = (sequelize, DataTypes) => {
     allowNull: false,
     unique: true,
     validate: {
-     len: [3, 256]
+      isDecimal: true,
+      min: -180,
+      max: 180,
     },
   },
 
-    name: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
@@ -86,7 +89,7 @@ module.exports = (sequelize, DataTypes) => {
   type: DataTypes.STRING,
   allowNull: false,
   validate: {
-    len: [60, 60]
+    len: [20, 60]
   },
  },
 
@@ -94,18 +97,20 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
-     len: [3, 256]
+     min: 1
     },
   },
 
-  createdAt: {
-    type: DataTypes.DECIMAL,
-    allowNull: false,
-    validate: {
-     len: [3, 256]
-    },
-  },
+  // avgRating: {
+  //   type: DataTypes.DECIMAL,
+  //   allowNull: true,
+  //   validate: {
+  //    min: 0,
+  //    max: 10,
+  //   },
+  // },
 
+<<<<<<< HEAD
   updatedAt: {
     type: DataTypes.DECIMAL,
     allowNull: false,
@@ -114,6 +119,16 @@ module.exports = (sequelize, DataTypes) => {
     },
   },
 
+=======
+  // previewImage: {
+  //   type: DataTypes.STRING,
+  //   allowNull: false,
+  //   unique: true,
+  //   validate: {
+  //    len: [3, 256]
+  //   },
+  // },
+>>>>>>> staging
 },
 
   {
@@ -122,7 +137,10 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope: {
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
+<<<<<<< HEAD
         exclude: ['hashedPassword', 'email', 'createdAt', 'updatedAt'],
+=======
+>>>>>>> staging
       },
     },
   }
