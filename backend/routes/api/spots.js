@@ -1,9 +1,17 @@
-//Imports
+auth-setup
+
+// --Imports--
+
+
+staging
 const express = require('express')
 const router = express.Router();
 
 // --Utility Imports--
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
+ auth-setup
+const { requireAuth } = require('../../utils/auth');
+
+staging
 const { check, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
@@ -47,26 +55,68 @@ const validateSpot = [
   handleValidationErrors
 ];
 
-// Create a new spot
-router.post('/', requireAuth, validateSpot, async (req, res) => {
-    const spot = await Spot.create({
-        ownerId,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price
-      } = req.body
-    );
+auth-setup
+//--Middleware to protect incoming Data for spot creation route-- 
+const validateSpot = [
+  check('address')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide an address.'),
+  check('city')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a city.'),
+  check('state')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a state.'),
+  check('country')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a country.'),
+  check('lat')
+    .exists({ checkFalsy: true })
+    .isFloat({ min: -90, max: 90 })
+    .withMessage('Please provide a valid latitude.'),
+  check('lng')
+    .exists({ checkFalsy: true })
+    .isFloat({ min: -180, max: 180 })
+    .withMessage('Please provide a valid longitude.'),
+  check('name')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a name.'),
+  check('description')
+    .exists({ checkFalsy: true })
+    .withMessage('Please provide a description.'),
+  check('price')
+    .exists({ checkFalsy: true })
+    .isFloat({ min: 0 })
+    .withMessage('Please provide a valid price.'),
+  handleValidationErrors
+];
+  
 
-  // Check for validation errors
-  const validationErrors = validationResult(req);
-  if (!validationErrors.isEmpty()) {
-    return res.status(400).json({ errors: validationErrors.array() });
+
+// --Create New Spot--
+router.post('/', requireAuth, validateSpot, async (req, res) => {
+  try {
+   const { address, city, state, country, lat, lng, name, description, price } = req.body;
+   const ownerId = req.user.id;
+
+   const spot = await Spot.create({
+    ownerId,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price
+});
+    
+    return res.status(201).json(spot);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+
+staging
   }
 
   // Set token cookie
@@ -96,16 +146,18 @@ router.use((req, res, next) => {
   next();
 });
 
-// a middleware sub-stack that handles GET requests to the /spot/:id path
-router.get('/spot/:id', (req, res, next) => {
-  // if the spot ID is 0, skip to the next router
-  if (req.params.id === '0') next('route');
-  // otherwise pass control to the next middleware function in this stack
-  else next();
-}, (req, res, next) => {
-  // render a regular page
-  res.render('regular');
-  next();
+auth-setup
+
+// --Get All Spots--
+router.get('/', async (req, res) => {
+  try {
+    const spots = await Spot.findAll();
+    return res.json(spots);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+staging
 });
 
 // a middleware sub-stack shows request info for any type of HTTP request to the /spot/:id path
@@ -116,24 +168,19 @@ router.use('/spot/:id', (req, res, next) => {
   console.log('Request Type:', req.method);
   next();
 
-});
-
-// predicate the router with a check and bail out when needed
-router.use((req, res, next) => {
-  if (!req.headers['x-auth']) return next('router');
-  next();
-});
-
-// handler for the /spot/:id path, which renders a special page
-router.get('/spot/:id', (req, res, next) => {
-  console.log(req.params.id);
-  res.render('special');
-});
-
-// handler for the /spot/:id path, which sends a special response
-router.get('/spot/:id', (req, res, next) => {
-  res.send('hello, spot!');
-  next();
+auth-setup
+// --Get Spot By Id--
+router.get('/:id', async (req, res) => {
+   try {
+     const spot = await Spot.findByPk(req.params.id);
+     if (!spot) {
+        return res.status(404).json({ error: "Spot not found"});
+     }
+     return res.json(spot);
+   } catch (error) {
+     return res.status(500).json({ error: error.message });
+  }
+staging
 });
 
 module.exports = router;
