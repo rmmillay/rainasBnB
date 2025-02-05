@@ -91,14 +91,4 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-// Synchronize the database and start the server
-sequelize.sync().then(() => {
-  const PORT = process.env.PORT || 8000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}).catch((error) => {
-  console.error('Unable to sync the database:', error);
-});
-
 module.exports = app;
