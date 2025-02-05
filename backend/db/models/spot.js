@@ -110,6 +110,16 @@ module.exports = (sequelize, DataTypes) => {
   //   },
   // },
 
+<<<<<<< HEAD
+  updatedAt: {
+    type: DataTypes.DECIMAL,
+    allowNull: false,
+    validate: {
+     len: [3, 256]
+    },
+  },
+
+=======
   // previewImage: {
   //   type: DataTypes.STRING,
   //   allowNull: false,
@@ -118,6 +128,7 @@ module.exports = (sequelize, DataTypes) => {
   //    len: [3, 256]
   //   },
   // },
+>>>>>>> staging
 },
 
   {
@@ -126,6 +137,10 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope: {
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
+<<<<<<< HEAD
+        exclude: ['hashedPassword', 'email', 'createdAt', 'updatedAt'],
+=======
+>>>>>>> staging
       },
     },
   }
