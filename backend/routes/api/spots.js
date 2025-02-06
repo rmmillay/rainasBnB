@@ -104,42 +104,26 @@ router.get('/:id', async (req, res) => {
 
 
 // --Get details for a Spot from an ID--
-router.get('/:spotId', async (req, res, next) => {
-
-  const spotId = parseInt(req.params.spotId);
-
-  const spot = await Spot.findOne({
-    where: { id: spotId },
-    include: [
+router.get('/:id', async (req, res) => {
+  try {
+    const spot = await Spot.findByPk(req.params.id, 
       {
-        model: Review,
-        attributes: []
-      },
-      {
-        model: User,
-        as: 'Owner',
-        attributes: ['id', 'firstName', 'lastName']
-      },
-      {
-        model: SpotImage,
-        attributes: ['id', 'url', 'preview']
-      }
-    ],
-    attributes: {
       include: [
-        [sequelize.fn('AVG', sequelize.col('Reviews.stars')), 'avgStarRating'],
-        [sequelize.fn('COUNT', sequelize.col('Reviews.id')), 'numReviews']
+        {
+          model: User,
+          as: 'Owner',
+          attributes: ['id', 'firstName', 'lastName']
+        }
       ]
-    },
-    group: ['Spot.id', 'Owner.id', 'SpotImages.id']
-  });
-
-  if (spot) {
-    res.status(200).json(spot);
-  } else {
-    return res.status(404).json({
-      "message": "Spot couldn't be found"
     });
+
+    if (!spot) {
+      return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    return res.json(spot);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 });
 
