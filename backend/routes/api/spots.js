@@ -101,4 +101,47 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
+
+// --Get details for a Spot from an ID--
+router.get('/:spotId', async (req, res, next) => {
+
+  const spotId = parseInt(req.params.spotId);
+
+  const spot = await Spot.findOne({
+    where: { id: spotId },
+    include: [
+      {
+        model: Review,
+        attributes: []
+      },
+      {
+        model: User,
+        as: 'Owner',
+        attributes: ['id', 'firstName', 'lastName']
+      },
+      {
+        model: SpotImage,
+        attributes: ['id', 'url', 'preview']
+      }
+    ],
+    attributes: {
+      include: [
+        [sequelize.fn('AVG', sequelize.col('Reviews.stars')), 'avgStarRating'],
+        [sequelize.fn('COUNT', sequelize.col('Reviews.id')), 'numReviews']
+      ]
+    },
+    group: ['Spot.id', 'Owner.id', 'SpotImages.id']
+  });
+
+  if (spot) {
+    res.status(200).json(spot);
+  } else {
+    return res.status(404).json({
+      "message": "Spot couldn't be found"
+    });
+  }
+});
+
+
 module.exports = router;

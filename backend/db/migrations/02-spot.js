@@ -93,7 +93,7 @@ module.exports = {
       // avgRating: {
       //   type: Sequelize.DECIMAL, //-> don't put aggregate data on db. 
       //   allowNull: false,
-          //defaultvalue: 0,
+      //     defaultvalue: 0,
       // },
 
       // previewImage: {
@@ -113,4 +113,3 @@ module.exports = {
     await queryInterface.dropTable('Spots');
   }
 };
-
