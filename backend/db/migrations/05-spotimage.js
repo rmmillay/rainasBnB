@@ -8,49 +8,45 @@ if (process.env.NODE_ENV === 'production') {
 /* @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('SpotImages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName: {
-        type: Sequelize.STRING(30),
+      spotId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "Spots",
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
       },
-      lastName: {
-        type: Sequelize.STRING(30),
-        allowNull: false,
-      },
-      email: {
-        type: Sequelize.STRING(256),
-        allowNull: false,
-        unique: true
-      },
-      username: {
-        type: Sequelize.STRING(30),
-        allowNull: false,
-        unique: true
-      },
-      hashedPassword: {
-        type: Sequelize.STRING.BINARY,
+      url: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      createdAt: {
+      preview: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false
+      },
+      createdAt: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') //SQLITE_ERROR: table SpotImages has no column named createdAt
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') //SQLITE_ERROR: table SpotImages has no column named updatedAt
       }
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = "Users";
+    options.tableName = "Spot Images";
     await queryInterface.dropTable(options);
   }
 };

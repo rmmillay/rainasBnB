@@ -51,7 +51,6 @@ module.exports = (sequelize) => {
     {
       sequelize,
       modelName: 'User',
-      schema: process.env.SCHEMA || 'protocol_3', // Define schema here
       defaultScope: {
         attributes: {
           exclude: ['hashedPassword', 'email', 'createdAt', 'updatedAt'],
