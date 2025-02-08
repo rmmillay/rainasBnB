@@ -2,7 +2,7 @@
 const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    class User extends Model {
+    class ReviewImage extends Model {
         static associate(models) {
             // define association here
         }
