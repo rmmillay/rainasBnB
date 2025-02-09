@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
           len: [3, 256],
           isEmail: true,
         },
-        
+
       },
       username: {
         type: DataTypes.STRING(30),
