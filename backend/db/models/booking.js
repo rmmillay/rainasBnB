@@ -1,12 +1,12 @@
 'use strict';
 const { Model, DataTypes } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
-    class Booking extends Model {
-      static associate(models) {
-        // define association here
-      }
+module.exports = (sequelize) => {
+  class Booking extends Model {
+    static associate(models) {
+      // define association here
     }
+  }
 
   Booking.init(
     {
@@ -21,16 +21,16 @@ module.exports = (sequelize, DataTypes) => {
       startDate: {
         type: DataTypes.DATEONLY,
         allowNull: false,
-        validate: {
-          isDate: true,
-        },
+        // validate: {
+        //   isDate: true,
+        // },
       },
       endDate: {
         type: DataTypes.DATEONLY,
         allowNull: false,
-        validate: {
-          isDate: true,
-        },
+        // validate: {
+        //   isDate: true,
+        // },
       },
     },
     {
@@ -43,5 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       // },
     }
   );
+
   return Booking;
 };

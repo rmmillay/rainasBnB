@@ -8,13 +8,14 @@ module.exports = (sequelize) => {
         }
     }
 
-    ReviewImage.init(
+ ReviewImage.init(
         {
 
             ReviewId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+
             url: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -34,6 +35,5 @@ module.exports = (sequelize) => {
             // },
         }
     );
-
     return ReviewImage;
 };

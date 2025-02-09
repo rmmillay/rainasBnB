@@ -16,6 +16,7 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+
             reviewId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
@@ -25,6 +26,7 @@ module.exports = {
                 },
                 onDelete: 'CASCADE'
             },
+
             url: {
                 type: Sequelize.STRING,
                 allowNull: false
@@ -35,6 +37,7 @@ module.exports = {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             },
+
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
@@ -43,8 +46,9 @@ module.exports = {
 
         }, options);
     },
-    async down(queryInterface, Sequelize) {
-        options.tableName = "ReviewImages";
-        await queryInterface.dropTable(options);
-    }
+
+ async down(queryInterface, Sequelize) {
+     options.tableName = "Review Images";
+     await queryInterface.dropTable(options);
+ }
 };
