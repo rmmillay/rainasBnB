@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
  async up (queryInterface, Sequelize) {
-     await ReviewImage.bulkCreate([
+     await queryInterface.bulkInsert('ReviewImages', [ //made changes here
 
             {
                 reviewId: 1,
@@ -39,11 +39,11 @@ module.exports = {
             },
 
 
-        ], { validate: true });
+        ], { validate: true, ...options });
     },
 
-    async down(queryInterface, Sequelize) {
-        options.tableName = 'ReviewImage';
+    async down (queryInterface, Sequelize) {
+        options.tableName = 'ReviewImages';
         const Op = Sequelize.Op;
         return queryInterface.bulkDelete(options, {
             reviewId: { [Op.in]: ['1', '2', '3', '4', '5'] }

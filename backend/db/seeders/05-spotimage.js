@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await SpotImage.bulkCreate([
+    await queryInterface.bulkInsert('SpotImages', [
 
       {
         spotId: 1,
@@ -43,7 +43,7 @@ module.exports = {
         preview: true
       },
       
-    ], { validate: true });
+    ], { validate: true, ...options });
   },
 
   async down (queryInterface, Sequelize) {

@@ -8,7 +8,6 @@ if (process.env.NODE_ENV === 'production') {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-
         await queryInterface.createTable('Reviews', {
 
             id: {
@@ -28,7 +27,7 @@ module.exports = {
                 allowNull: false,
                 unique: true
             },
-
+            
             review: {
                 type: Sequelize.TEXT,
                 allowNull: false
@@ -54,10 +53,9 @@ module.exports = {
 
         }, options);
     },
+    
     async down(queryInterface, Sequelize) {
-
         options.tableName = "Reviews";
-        return queryInterface.dropTable(options);
-        await queryInterface.dropTable('Reviews');
-    }
-};
+        await queryInterface.dropTable(options);
+      }
+    };

@@ -11,11 +11,12 @@ module.exports = {
     await queryInterface.createTable('Bookings', {
 
       id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+        primaryKey: true
       },
+
       spotId: { 
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -24,6 +25,7 @@ module.exports = {
           key: 'id'
       }
       },
+
       userId: { 
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -32,19 +34,23 @@ module.exports = {
           key: 'id'
       }
       },
+
       startDate: {
         type: Sequelize.DATEONLY,
         allowNull: false
       },
+
       endDate: {
         type: Sequelize.DATEONLY,
         allowNull: false
       },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
+      
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
