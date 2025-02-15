@@ -4,12 +4,14 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     class SpotImage extends Model {
         static associate(models) {
-            
+
           // define association here
-          
-          SpotImage.belongsTo(models.Spot, {
-            foreignKey: "spotId" 
-        });
+
+            SpotImage.belongsTo(models.Spot, {
+                foreignKey: "spotId",
+                onDelete: "CASCADE",
+                hooks: true
+            });
 
         }
     }
@@ -24,7 +26,15 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    notEmpty: true
+                    notEmpty: true,
+                    len: [8, 500],
+                    isGoodUrl(val){
+                        if(val.starsWith(" ")){
+                            throw new Error("Can't start with empty space")
+                        } else if (val.endsWith(" ")){
+                            throw new Error("Dont end with spaces please");
+                        }
+                    }
                 }
             },
 

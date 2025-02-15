@@ -4,223 +4,168 @@ const router = express.Router();
 const { requireAuth } = require('../../utils/auth');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-const { Spot, User, SpotImage, Booking, Review, ReviewImage } = require('../../db/models'); 
+const { Spot, User, SpotImage, Booking, Review, ReviewImage } = require('../../db/models');
 
 
 // Validate Spots
 const validateSpot = [
   check('address')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide an address.'),
+    .notEmpty()
+    .withMessage('Street address is required'),
+  check('address')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Street must be bigger than 2 letters'),
   check('city')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a city.'),
+    .withMessage('City is required.'),
   check('state')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a state.'),
+    .withMessage('State is required.'),
   check('country')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a country.'),
+    .withMessage('Country is required.'),
   check('lat')
     .exists({ checkFalsy: true })
-    .isFloat({ min: -90, max: 90 })
-    .withMessage('Please provide a valid latitude.'),
+    .withMessage('Latitud must be within -90 and 90.'),
   check('lng')
     .exists({ checkFalsy: true })
-    .isFloat({ min: -180, max: 180 })
-    .withMessage('Please provide a valid longitude.'),
+    .withMessage('Longitude must be within -180 and 180.'),
   check('name')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a name.'),
-  check('description')
+    .withMessage('Name must be less than 50 characters.'),
+  check('descriptiion')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a description.'),
+    .withMessage('Description is required.'),
   check('price')
     .exists({ checkFalsy: true })
-    .isFloat({ min: 0 })
-    .withMessage('Please provide a valid price.'),
+    .withMessage('Price per day must be a positive number.'),
   handleValidationErrors
 ];
 
-// // Validation middleware for query parameters
-// const validateQueryParams = [
-//   query('page')
-//     .optional()
-//     .isInt({ min: 1 })
-//     .withMessage('Page must be greater than or equal to 1'),
-//   query('size')
-//     .optional()
-//     .isInt({ min: 1 })
-//     .withMessage('Size must be greater than or equal to 1'),
-//   query('minLat')
-//     .optional()
-//     .isFloat({ min: -90, max: 90 })
-//     .withMessage('Minimum latitude is invalid'),
-//   query('maxLat')
-//     .optional()
-//     .isFloat({ min: -90, max: 90 })
-//     .withMessage('Maximum latitude is invalid'),
-//   query('minLng')
-//     .optional()
-//     .isFloat({ min: -180, max: 180 })
-//     .withMessage('Minimum longitude is invalid'),
-//   query('maxLng')
-//     .optional()
-//     .isFloat({ min: -180, max: 180 })
-//     .withMessage('Maximum longitude is invalid'),
-//   query('minPrice')
-//     .optional()
-//     .isFloat({ min: 0 })
-//     .withMessage('Minimum price must be greater than or equal to 0'),
-//   query('maxPrice')
-//     .optional()
-//     .isFloat({ min: 0 })
-//     .withMessage('Maximum price must be greater than or equal to 0'),
-//   handleValidationErrors
-// ];
 
-// // Route to get all spots with query filters
-// router.get('/', validateQueryParams, async (req, res) => {
-//   let {
-//     page = 1,
-//     size = 20,
-//     minLat,
-//     maxLat,
-//     minLng,
-//     maxLng,
-//     minPrice,
-//     maxPrice
-//   } = req.query;
 
-//   page = parseInt(page);
-//   size = parseInt(size);
+// Validation middleware for review data
+// TODO: Do this validation
+const validateReview = [
+];
 
-//   const where = {};
-//   if (minLat) where.lat = { ...where.lat, [Op.gte]: parseFloat(minLat) };
-//   if (maxLat) where.lat = { ...where.lat, [Op.lte]: parseFloat(maxLat) };
-//   if (minLng) where.lng = { ...where.lng, [Op.gte]: parseFloat(minLng) };
-//   if (maxLng) where.lng = { ...where.lng, [Op.lte]: parseFloat(maxLng) };
-//   if (minPrice) where.price = { ...where.price, [Op.gte]: parseFloat(minPrice) };
-//   if (maxPrice) where.price = { ...where.price, [Op.lte]: parseFloat(maxPrice) };
-
-//   try {
-//     const spots = await Spot.findAll({
-//       where,
-//       limit: size,
-//       offset: (page - 1) * size,
-//       include: [
-//         {
-//           model: SpotImage,
-//           attributes: ['url'],
-//           where: { preview: true },
-//           required: false
-//         }
-//       ]
-//     });
-
-//     const formattedSpots = spots.map(spot => {
-//       const spotData = spot.toJSON();
-//       spotData.previewImage = spotData.SpotImages.length ? spotData.SpotImages[0].url : null;
-//       delete spotData.SpotImages;
-//       return spotData;
-//     });
-
-//     return res.json({
-//       Spots: formattedSpots,
-//       page,
-//       size
-//     });
-//   } catch (error) {
-//     return res.status(500).json({ error: error.message });
-//   }
-// });
-
-//Create a Spot
-router.post('/', requireAuth, validateSpot, async (req, res) => {
+// --Get All spots--
+router.get('/', async (req, res, next) => {
   try {
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
-    const ownerId = req.user.id;
-
-    const spot = await Spot.create({
-      ownerId,
-      address,
-      city,
-      state,
-      country,
-      lat,
-      lng,
-      name,
-      description,
-      price
+    const spots = await Spot.findAll({
+      attributes: ["id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "description", "price", "createdAt", "updatedAt"],
+      include: [
+        { model: Review },
+        {
+          model: SpotImage,
+          where: {
+            preview: true
+          }
+        }
+      ]
     });
 
-    return res.status(201).json(spot);
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
+    const prettySpots = [];
+
+    for (let spot of spots) {
+      const spotObj = await spot.toJSON();
+      console.log(spotObj)
+      // gett the average of all the reviews per spot
+      let sum = 0;
+      for (let i = 0; i < spotObj.Reviews.length; i++) {
+        let review = spotObj.Reviews[i];
+        console.log(review);
+        sum += review.stars;
+      }
+      const avgRating = sum / spotObj.Reviews.length;
+      spotObj.avgRating = avgRating;
+
+      // Get the previewImage
+      let previewImageUrl = null;
+      for (let previewImage of spotObj.SpotImages) {
+        if (previewImage.preview === true) {
+          previewImageUrl = previewImage.url;
+        }
+      }
+
+      spotObj.previewImage = previewImageUrl;
+      delete spotObj.SpotImages;
+      delete spotObj.Reviews
+      prettySpots.push(spotObj)
+
+    }
+
+    return res.json({ Spots: prettySpots });
+  } catch (e) {
+    next(e);
   }
 });
 
-// Get All spots
+
+//Create a Spot
+router.post('/', requireAuth, valSpot, async (req, res, next) => {
+  try {
+    const { address, city, state, country, lat, lng, name, description, price } = req.body
+    console.log(address, city, state, country, lat, lng, name, description, price)
+
+    const newSpot = await Spot.create({
+      ownerId: req.user.id,
+      address, city, state, country, lat, lng, name, description, price
+    });
+
+    res.status(201);
+    return res.json(newSpot);
+
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+// Get All spots --- dont worry about queries and pagination
 router.get('/', async (req, res) => {
   try {
     const spots = await Spot.findAll();
     return res.json(spots);
   } catch (error) {
-    return res.status(500).json({ error: "Incorrect details for your Spot. Please use accurate information." });
+   next(error);
   }
 });
 
-// Get spot by id
+
+// Get Spot by id
 router.get('/:id', async (req, res) => {
   try {
-    const spot = await Spot.findByPk(req.params.id); 
-    //   {
-    //   include: [
-    //     {
-    //       model: User,
-    //       as: 'Owner',
-    //       attributes: ['id', 'firstName', 'lastName']
-    //     }
-    //   ]
-    // });
-
-    if (!spot) {
-      return res.status(404).json({ message: "Spot couldn't be found" });
-    }
-
-    return res.json(spot);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-//get spots
-router.get('/:id', async (req, res) => {
-  try {
-    const spot = await Spot.findByPk(req.params.id, 
+    const spot = await Spot.findByPk(req.params.id,
       {
-      include: [
-        {
-          model: User,
-          as: 'Owner',
-          attributes: ['id', 'firstName', 'lastName']
-        }
-      ]
-    });
+        include: [
+          {
+            model: User,
+            as: 'Owner',
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ]
+      });
 
     if (!spot) {
-      return res.status(404).json({ message: "Spot couldn't be found" });
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
     }
 
     return res.json(spot);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Get spots by owner id
 router.get('/currentUser', requireAuth, async (req, res) => {
   try {
+    // TODO: add validations and error handling to this route
+
     const ownerId = req.user.id;
     const spot = await Spot.findAll({
       where: { ownerId }
@@ -228,62 +173,27 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 
     return res.status(200).json(spot);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    next(error);
   }
 });
 
 
-//Edit a spot
-router.put('/:id', requireAuth, validateSpot, async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.id;
-  const { address, city, state, country, lat, lng, name, description, price } = req.body;
 
-  try {
-    const spot = await Spot.findOne({
-      where: {
-        id,
-        ownerId: userId
-      }
-    });
-
-    if (!spot) {
-      return res.status(404).json({ message: 'Spot not found or you do not have permission to edit this spot' });
-    }
-
-    spot.address = address || spot.address;
-    spot.city = city || spot.city;
-    spot.state = state || spot.state;
-    spot.country = country || spot.country;
-    spot.lat = lat || spot.lat;
-    spot.lng = lng || spot.lng;
-    spot.name = name || spot.name;
-    spot.description = description || spot.description;
-    spot.price = price || spot.price;
-
-    await spot.save();
-
-    return res.json({
-      id: spot.id,
-      ownerId: spot.ownerId,
-      address: spot.address,
-      city: spot.city,
-      state: spot.state,
-      country: spot.country,
-      lat: spot.lat,
-      lng: spot.lng,
-      name: spot.name,
-      description: spot.description,
-      price: spot.price,
-      createdAt: spot.createdAt,
-      updatedAt: spot.updatedAt,
-      previewImage: null,
-      avgRating: null
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'An error occurred while updating the spot' });
+// Add a Spot Image to an existing Spot based on Spot ID (user auth required)
+router.post('/:id/images', requireAuth, async (req, res, next) => {
+  try{
+    // TODO: Do this route
+  } catch(e){
+    next(e);
   }
+});
+
+
+
+
+// Edit a spot
+router.put('/:id', requireAuth, validateSpot, async (req, res) => {
+  // TODO: Do this route
 });
 
 // Delete a spot
@@ -314,4 +224,167 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 });
 
 
+
+// Creating a Review based on a spot id
+router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
+  try {
+    // How do I grab the spot id that was used on postman
+    // req.paramgs is an object of parameters
+    // This is one way to grab it
+    // const spotId = req.params.spotId
+    const { spotId } = req.params;
+    const userId = req.user.id;
+    const { review, stars } = req.body;
+
+    // Find out if the spot exists
+    const spot = await Spot.findByPk(spotId);
+
+    if (!spot) {
+      let noResourceError = new Error("Spot couldn't be found");
+      noResourceError.status = 404;
+      throw noResourceError;
+    }
+
+    // If it does exist -> See if the current user made a review already]
+    const userReview = await Review.findOne({
+      where: {
+        userId: userId
+      }
+    });
+
+    // if userReview is null -> we did not make a review already
+    if (!userReview) {
+      // Create the new Review
+      const newReview = await Review.create({ userId, spotId, review, stars });
+      res.status(201);
+      return res.json(newReview);
+    } else {
+      // TODO: Edit this error message and status code based on api docs
+      let alreadyReviewedError = new Error("User already has a review for this spot");
+      alreadyReviewedError.status = 500;
+      throw alreadyReviewedError;
+    }
+
+  } catch (error) {
+    next(error);
+  }
+})
+
+
+
+// Get all reviews belonging to a spot based on spot id
+router.get('/:id/reviews', async (req, res, next) => {
+  try {
+    res.status(201);
+
+    const spotId = req.params.id;
+    // SEQUELIZE ---- GRABBING DATA FROM THE DATABASE -> crosses the bridge -> DATABASE
+    const reviews = await Review.findAll({
+      where: {
+        spotId: spotId
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName"]
+
+        },
+        {
+          model: ReviewImage,
+          attributes: ["id", "reviewId", "url"]
+        }
+      ]
+    });
+
+    return res.json({ Reviews: reviews });
+    // return res.json({Reviews: prettyReviews});
+  } catch (error) {
+    console.log("starting point")
+    next(error);
+  }
+})
+
 module.exports = router;
+
+
+
+
+    // --------------- THIS IS HOW WE GET QUERIES USING JAVASCRIPT ------
+    // NOT VERY EFFICIENT IN TERMS OF PERFORMANCE, BUT GREAT FOR SMALL PROJECTS AND SPRINTS
+    // const resReviews = [];
+
+    // // Loop through all the reviews
+    // for(let review of reviews){
+    //   // Method to turn ugly sequelize objects into pretty javascript objrects
+    //   const prettyReview = await review.toJSON();
+    //   // console.log("This is one singular review", prettyReview)
+    //   // Grab the id from the prettyReview object and use it to get the User associated to that id
+    //   let userId = prettyReview.userId;
+    //   const userObj = await User.findByPk(userId);
+    //   const prettyUser = await userObj.toJSON();
+    //   // console.log(prettyUser, "this is the user who made the review");
+    //   prettyReview["User"] = prettyUser
+    //   resReviews.push(prettyReview);
+    //   // console.log("This is one singular review", prettyReview)
+    // }
+
+
+    // TODO
+    // - GET RID OF THE USERNAME FROM THE RETURN
+    // - GET RID OF THE REVIEWID
+    // - GET RID OF THE CREATEDAT AND UPDATEDAT
+
+
+    /*
+     "Reviews": [
+        {
+          "id": 1, ---
+          "userId": 1, ---
+          "spotId": 1, ---
+          "review": "This was an awesome spot!", ----
+          "stars": 5, ----
+          "createdAt": "2021-11-19 20:39:36", ----
+          "updatedAt": "2021-11-19 20:39:36", -----
+          "User": { ---
+            "id": 1, ---
+            "firstName": "John", ---
+            "lastName": "Smith" ---
+          },
+          "ReviewImages": [ --
+            {
+              "id": 1, ---
+              "url": "image url" ---
+            }
+          ],
+        }
+      ]
+
+    */
+
+    // ---------- CLEAN UP EACH REVIEW USING JAVASCRIPT ------------
+    // let prettyReviews = [];
+
+    // for(let review of reviews){
+    //   // Make the review a javascript object
+    //   const prettyReview = review.toJSON();
+    //   // delete the username from the User object
+    //   delete prettyReview.User.username
+
+    //   // add all the reviewImage objects we want to keep into this array
+    //   const prettyReviewImages = [];
+
+    //   // loop through each ReviewImages and delete them
+    //   for(let reviewImage of prettyReview.ReviewImages){
+    //     // delete the createdAt key from each reviewImage
+    //     delete reviewImage.createdAt;
+    //     // delete the updatedAt keyt from each reviewImage
+    //     delete reviewImage.updatedAt;
+    //     // Add our reviewImage (modified) to our storage array on line 148
+    //     prettyReviewImages.push(reviewImage);
+
+    //   }
+    //   // reassign the key-value of our reviewImages with the pretty version
+    //   prettyReview.ReviewImages = prettyReviewImages;
+    //   // Push all our pretty reviews into our tracker on line 139
+    //   prettyReviews.push(prettyReview);
+    // }

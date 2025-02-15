@@ -6,8 +6,8 @@ const usersRouter = require('./users.js');
 const sessionRouter = require('./session.js');
 const reviewsRouter = require('./reviews.js');
 const bookingsRouter = require('./bookings.js');
-const spotImagesRouter = require('./spot-images.js');
-const reviewImagesRouter = require('./review-images.js');
+const spotImagesRouter = require('./spotImages.js');
+const reviewImagesRouter = require('./reviewImage.js');
 
 
 // --Sequelize imports
@@ -36,7 +36,7 @@ router.post('/test', function (req, res) {
   res.json({ requestBody: req.body });
 });
 
-// GET /api/set-token-cookie
+// Add a XSRF-TOKEN cookie
 router.get('/set-token-cookie', async (_req, res) => {
   const user = await User.findOne({
     where: {
@@ -47,7 +47,7 @@ router.get('/set-token-cookie', async (_req, res) => {
   return res.json({ user: user });
 });
 
-// GET /api/restore-user
+// Restores the User who previously logged in
 router.get('/restore-user', (req, res) => {
   return res.json(req.user);
 }

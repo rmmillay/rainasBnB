@@ -1,60 +1,51 @@
 'use strict';
 
+
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 
-/* @type {import('sequelize-cli').Migration} */
+
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('SpotImages', {
-
       id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
       },
-
       spotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "Spots",
-          key: 'id'
+          key: "id"
         },
-        onDelete: 'CASCADE'
-
       },
       url: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING(500),
+        allowNull: false,
       },
-
       preview: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+        default: false
       },
-
       createdAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') //SQLITE_ERROR: table SpotImages has no column named createdAt
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-
       updatedAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') //SQLITE_ERROR: table SpotImages has no column named updatedAt
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
-      
     }, options);
   },
-  
   async down(queryInterface, Sequelize) {
-    options.tableName = "Spot Images";
-    await queryInterface.dropTable(options);
+    await queryInterface.dropTable('SpotImages');
   }
 };

@@ -4,17 +4,19 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     class ReviewImage extends Model {
         static associate(models) {
-            
-          // define association here
-          
-          ReviewImage.belongsTo(models.Review, {
-            foreignKey: "reviewId" 
-        });
+
+            // define association here
+
+            ReviewImage.belongsTo(models.Review, {
+                foreignKey: "reviewId",
+                onDelete: "CASCADE",
+                hooks: true
+            });
 
         }
     }
 
- ReviewImage.init(
+    ReviewImage.init(
         {
 
             reviewId: {
@@ -26,7 +28,15 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    notEmpty: true
+                    notEmpty: true,
+                    len: [8, 500],
+                    isGoodUrl(val) {
+                        if (val.starsWith(" ")) {
+                            throw new Error("Can't start with empty space")
+                        } else if (val.endsWith(" ")) {
+                            throw new Error("Dont end with spaces please");
+                        }
+                    }
                 }
             },
 
@@ -34,11 +44,6 @@ module.exports = (sequelize) => {
         {
             sequelize,
             modelName: 'ReviewImage',
-            // defaultScope: {
-            //     attributes: {
-            //         exclude: ['createdAt', 'updatedAt'],
-            //     },
-            // },
         }
     );
     return ReviewImage;

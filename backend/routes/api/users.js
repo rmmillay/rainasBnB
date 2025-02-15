@@ -15,79 +15,96 @@ const { User } = require('../../db/models');
 
 // --Middleware TO Protect Incoming Data For Sign Up Route--
 const validateSignup = [
-    check('email')
-        .exists({ checkFalsy: true })
-        .isEmail()
-        .withMessage('Please provide a valid email.'),
-    check('username')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 4 })
-        .withMessage('Please provide a username with at least 4 characters.'),
-    check('username')
-        .not()
-        .isEmail()
-        .withMessage('Username cannot be an email.'),
-    check('password')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Password must be 6 characters or more.'),
-    handleValidationErrors
+  check('email')
+    .exists({ checkFalsy: true })
+    .isEmail()
+    .withMessage('Invalid email'),
+  check('username')
+    .exists({ checkFalsy: true })
+    .withMessage('Username is required'),
+  check('username')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 4 })
+    .withMessage('Please provide a username with at least 4 characters.'),
+  check('username')
+    .not()
+    .isEmail()
+    .withMessage('Username cannot be an email.'),
+  check('password')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 6 })
+    .withMessage('Password must be 6 characters or more.'),
+  check('firstName')
+    .exists({ checkFalsy: true })
+    .withMessage('First Name is required'),
+  check('lastName')
+    .exists({ checkFalsy: true })
+    .withMessage('Last Name is required'),
+  handleValidationErrors
 ];
 
-// --New User Sign Up--
-router.post('/', validateSignup, async (req, res) => {
-  try {
-    const { firstName, lastName, email, password, username } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ firstName, lastName, email, username, hashedPassword });
+// --New User Sign Up--
+router.post('/', validateSignup, async (req, res, next) => {
+  try {
+
+    const { email, password, username, firstName, lastName } = req.body;
+
+    const existingEmail = await User.findOne({
+      where: {
+        email: email
+      }
+    })
+
+    if (existingEmail !== null) {
+      const invalidEmail = new Error("User already exists");
+      invalidEmail.status = 500;
+      invalidEmail.errors = {
+        "email": "User with that email already exists"
+      }
+      throw invalidEmail;
+    }
+
+    const existingUsername = await User.findOne({
+      where: {
+        username: username
+      }
+    })
+
+    if (existingUsername !== null) {
+      const invalidUsername = new Error("User already exists");
+      invalidUsername.status = 500;
+      invalidUsername.errors = {
+        "username": "User with that username already exists"
+      };
+      throw invalidUsername
+    }
+
+    const hashedPassword = bcrypt.hashSync(password);
+    const user = await User.create({ email, username, hashedPassword, firstName, lastName });
 
     const safeUser = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+
     };
 
     await setTokenCookie(res, safeUser);
-    return res.status(201).json({ user: safeUser });
-
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-
-
-// --Get All Users--
-router.get('/', requireAuth, async (req, res) => {
-  try {
-    const users = await User.findAll({
-      attributes: ['id', 'email', 'username']
-    });
-    return res.json({ users });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-
-// --GET Requests To The /user/:id Path--
-router.get('/user/:id', requireAuth, async (req, res) => {
-  try {
-    const user = await User.findByPk(req.params.id, {
-      attributes: ['id', 'email', 'username']
+    return res.json({
+      user: safeUser
     });
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    return res.json({ user });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+  } catch (e) {
+    next(e)
   }
-});
-  
+}
+);
+
+
+
 
 
 

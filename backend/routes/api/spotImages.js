@@ -6,37 +6,37 @@ const router = express.Router();
 const { requireAuth } = require('../../utils/auth');
 
 // --Sequelize Imports--
-const { Review, ReviewImage } = require('../../db/models');
+const { Spot, SpotImage } = require('../../db/models');
 
 
-// Complete route /api/review-images/:imageId
-// Delete a Review Image
+
+// Complete route /api/spot-images/:imageId
+// Delete a Spot Image
 router.delete('/:imageId', requireAuth, async (req, res, next) => {
     try {
-        res.status(200);
-
         const imageId = req.params.imageId;
 
-        // Find reviewimage and include the associated review to check if review belongs to owner
-        const reviewImage = await ReviewImage.findByPk(imageId, {
-            include: [{ model: Review }]
+        // Find spotimage and include the associated spot to check if spot belongs to owner
+        const spotImage = await SpotImage.findByPk(imageId, {
+            include: [{ model: Spot }]
         });
 
-        if (!reviewImage) {
-            const error = new Error("Review Image couldn't be found");
+        if (!spotImage) {
+            const error = new Error("Spot Image couldn't be found");
             error.status = (404);
             throw error;
         }
 
-        // If the logged in user is not the owner of the review
-        if (req.user.id !== reviewImage.Review.userId) {
+        // If the logged in user is not the owner of the spot
+        if (req.user.id !== spotImage.Spot.ownerId) {
             const error = new Error("Forbidden");
             error.status = (403);
             throw error;
         }
 
-        await reviewImage.destroy();
+        await spotImage.destroy();
 
+        res.status(200);
         return res.json({ message: "Successfully deleted" });
 
     } catch (error) {
