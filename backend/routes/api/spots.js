@@ -35,7 +35,7 @@ const validateSpot = [
   check('name')
     .exists({ checkFalsy: true })
     .withMessage('Name must be less than 50 characters.'),
-  check('descriptiion')
+  check('description')
     .exists({ checkFalsy: true })
     .withMessage('Description is required.'),
   check('price')
@@ -105,7 +105,7 @@ router.get('/', async (req, res, next) => {
 
 
 //Create a Spot
-router.post('/', requireAuth, valSpot, async (req, res, next) => {
+router.post('/', requireAuth, validateSpot, async (req, res, next) => {
   try {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
     console.log(address, city, state, country, lat, lng, name, description, price)
@@ -183,6 +183,7 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 router.post('/:id/images', requireAuth, async (req, res, next) => {
   try{
     // TODO: Do this route
+    return res.json(":)")
   } catch(e){
     next(e);
   }
@@ -194,6 +195,7 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
 // Edit a spot
 router.put('/:id', requireAuth, validateSpot, async (req, res) => {
   // TODO: Do this route
+  return res.json(":)")
 });
 
 // Delete a spot

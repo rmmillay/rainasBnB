@@ -118,14 +118,15 @@ module.exports = (sequelize, DataTypes) => {
       price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        isDecimal: true
+        validate: {
+          isDecimal: true
+        }
       },
       createdAt: {
         type: DataTypes.DATE
       },
       updatedAt: {
         type: DataTypes.DATE,
-        allowNull: false,
         validate: {
           len: [3, 256]
         },

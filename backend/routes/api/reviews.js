@@ -8,10 +8,16 @@ const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models'
 
 
 
+// Validation middleware for review data
+// TODO: Do this validation
+const validateReview = [
+];
+
 // Add a Review Image to an existing Review based on Review Id (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
   try{
     // TODO: Do this route
+    return res.json(":)")
   } catch(e){
     next(e);
   }

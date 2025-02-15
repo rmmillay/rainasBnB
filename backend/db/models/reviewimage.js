@@ -25,13 +25,13 @@ module.exports = (sequelize) => {
             },
 
             url: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: false,
                 validate: {
                     notEmpty: true,
                     len: [8, 500],
                     isGoodUrl(val) {
-                        if (val.starsWith(" ")) {
+                        if (val.startsWith(" ")) {
                             throw new Error("Can't start with empty space")
                         } else if (val.endsWith(" ")) {
                             throw new Error("Dont end with spaces please");

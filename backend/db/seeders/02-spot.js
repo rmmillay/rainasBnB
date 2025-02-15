@@ -11,13 +11,14 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await Spot.bulkCreate([
       {
+        id: 1,
         ownerId: 1,
         address: "123 spongebob way",
         city: "bikini bottom",
         state: "hawaii",
         country: "usa",
-        lat: 38.8977,
-        lng: -77.0365,
+        lat: 37.7645358,
+        lng: -122.4730327,
         name: "Pineapple",
         description: "pineapple under the sea",
         price: 55.00
