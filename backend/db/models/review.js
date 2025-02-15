@@ -11,9 +11,9 @@
         foreignKey: 'reviewId'
       });
 
-      // Review.belongsTo(models.User, { 
-      //   foreignKey: 'UserId'
-      // });
+      Review.belongsTo(models.User, { 
+        foreignKey: 'UserId'
+      });
 
       Review.hasMany(models.ReviewImage, { 
         foreignKey: 'reviewId'
@@ -28,12 +28,12 @@
      {
  
 
-    id: { 
-      type: DataTypes.INTEGER, 
-      allowNull: false,
-      unique: true,
-      primaryKey: true,
-    },
+    // id: { 
+    //   type: DataTypes.INTEGER, 
+    //   allowNull: false,
+    //   unique: true,
+    //   primaryKey: true,
+    // },
 
     userId: {
       type: DataTypes.INTEGER,
@@ -44,7 +44,7 @@
     spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
+      // unique: true,
     },
  
     review: {
@@ -59,6 +59,15 @@
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
+
   },
 
 
@@ -67,7 +76,7 @@
      modelName: 'Review',
      defaultScope: {
        attributes: {
-         exclude: ['createdAt', 'updatedAt'],
+        //  exclude: ['createdAt', 'updatedAt'],
        },
      },
    }

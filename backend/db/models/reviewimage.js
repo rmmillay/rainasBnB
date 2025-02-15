@@ -4,7 +4,13 @@ const { Model, DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     class ReviewImage extends Model {
         static associate(models) {
-            // define association here
+            
+          // define association here
+          
+          ReviewImage.belongsTo(models.Review, {
+            foreignKey: "reviewId" 
+        });
+
         }
     }
 

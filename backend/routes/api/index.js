@@ -1,9 +1,14 @@
 // ----IMPORTS----
 // --Express imports
+const express = require('express')
 const spotsRouter = require('./spots.js');
 const usersRouter = require('./users.js');
-const express = require('express')
 const sessionRouter = require('./session.js');
+const reviewsRouter = require('./reviews.js');
+const bookingsRouter = require('./bookings.js');
+const spotImagesRouter = require('./spot-images.js');
+const reviewImagesRouter = require('./review-images.js');
+
 
 // --Sequelize imports
 const { User } = require('../../db/models');
@@ -21,7 +26,10 @@ router.use(restoreUser);
 router.use('/session', sessionRouter);
 router.use('/spots', spotsRouter);
 router.use('/users', usersRouter);
-
+router.use('/reviews', reviewsRouter);
+router.use('/bookings', bookingsRouter);
+router.use('/spot-images', spotImagesRouter);
+router.use('/review-images', reviewImagesRouter);
 
 // --Routes--
 router.post('/test', function (req, res) {
