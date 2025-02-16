@@ -24,10 +24,46 @@ const validateReview = [
 ];
 
 // Add a Review Image to an existing Review based on Review Id (user auth required)
-router.post('/:id/images', requireAuth, async (req, res, next) => {
+router.put('/:id/images', requireAuth, async (req, res, next) => {
   try {
     // TODO: Do this route
-    return res.json(":)")
+
+    const { reviewId } = req.params;
+    const { url } = req.body;
+    const userId = req.user.id;
+
+    const review = await Review.findByPk(reviewId);
+
+    if (!review) {
+      let noExistingReviewError = new Error("Review couldn't be found");
+      noExistingReviewError.status = 404;
+      throw noExistingReviewError;
+    }
+
+    if (review.userId !== userId) {
+      let notUserReviewError = new Error(" This is not your review");
+      notUserReviewError.status = 403;
+      throw notUserReviewError;
+    }
+
+    const reviewImageCount = await ReviewImage.count({
+      where: {
+        reviewId
+      }
+    });
+
+    if (reviewImageCount >= 10) {
+      let tooManyReviewImages = new Error("Maximum number of images for this resource was reached");
+      tooManyReviewImages.status = 403;
+      throw tooManyReviewImages;
+    }
+
+    const newImage = await ReviewImage.create({
+      reviewId,
+      url
+    });
+
+    return res.status(201).json(newImage);
   } catch (e) {
     next(e);
   }
@@ -136,7 +172,7 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res, next) => {
       throw noExistingReviewError;
     }
 
-    if (existingReview.userId !== userId) {// 
+    if (existingReview.userId !== userId) {
       // TODO: Error handling
       let notUserReviewError = new Error("Forbidden: This is not your review");
       notUserReviewError.status = 403;
@@ -147,7 +183,8 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res, next) => {
     await review.destroy();
 
     // TODO: Add a status MEssage
-    return res.json({ message: 'Successfully deleted' });
+    //return res.json({ message: 'Successfully deleted' });
+    return res.json(review);
   } catch (err) {
     next(err);
   }
