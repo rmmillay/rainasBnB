@@ -11,14 +11,23 @@ const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models'
 // Validation middleware for review data
 // TODO: Do this validation
 const validateReview = [
+  check('review')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 3, max: 256 })
+    .withMessage('Please provide a valid review'),
+  check('stars')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 1, max: 5 })
+    .withMessage('Please provide a valid rating'),
+  handleValidationErrors
 ];
 
 // Add a Review Image to an existing Review based on Review Id (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
-  try{
+  try {
     // TODO: Do this route
     return res.json(":)")
-  } catch(e){
+  } catch (e) {
     next(e);
   }
 });
@@ -75,7 +84,7 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
 
 
 // Route to update an existing review
-router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res) => {
+router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const { review, stars } = req.body;
