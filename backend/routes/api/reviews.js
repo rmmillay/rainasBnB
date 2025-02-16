@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../../utils/auth');
 const { check, validationResult } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
 const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models');
 
 
@@ -14,11 +15,11 @@ const validateReview = [
   check('review')
     .exists({ checkFalsy: true })
     .isLength({ min: 3, max: 256 })
-    .withMessage('Please provide a valid review'),
+    .withMessage('Review text is required'),
   check('stars')
     .exists({ checkFalsy: true })
     .isLength({ min: 1, max: 5 })
-    .withMessage('Please provide a valid rating'),
+    .withMessage('Stars must be an integer from 1 to 5'),
   handleValidationErrors
 ];
 
@@ -34,7 +35,7 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
 
 
 // Route to get all reviews written by the current user
-router.get('/reviews/current', requireAuth, async (req, res) => {
+router.get('/reviews/current', requireAuth, async (req, res,) => {
   try {
     const userId = req.user.id;
     const reviews = await Review.findAll({
@@ -95,6 +96,7 @@ router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, n
 
     if (!existingReview) {
       // TODO: Error handling
+
     }
 
     if (existingReview.userId !== userId) {
@@ -114,7 +116,7 @@ router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, n
 });
 
 // Route to delete an existing review
-router.delete('/reviews/:reviewId', requireAuth, async (req, res) => {
+router.delete('/reviews/:reviewId', requireAuth, async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const userId = req.user.id;
@@ -124,10 +126,18 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res) => {
 
     if (!existingReview) {
       // TODO: Error handling
+      let noExistingReviewError = new Error("Review couldn't be found");
+      noExistingReviewError.status = 404;
+      throw noExistingReviewError;
+      //return next(err);
     }
 
     if (existingReview.userId !== userId) {
       // TODO: Error handling
+      let notUserReviewError = new Error("Forbidden: This is not your review");
+      notUserReviewError.status = 403;
+      throw notUserReviewError;
+      //return next(err)
     }
 
     // Deletes a review
@@ -135,8 +145,8 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res) => {
 
     // TODO: Add a status MEssage
     return res.json({ message: 'Successfully deleted' });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 });
 
