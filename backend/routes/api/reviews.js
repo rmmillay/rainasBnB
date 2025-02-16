@@ -96,11 +96,16 @@ router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, n
 
     if (!existingReview) {
       // TODO: Error handling
-
+      let noExistingReviewError = new Error("Review couldn't be found");
+      noExistingReviewError.status = 404;
+      throw noExistingReviewError;
     }
 
     if (existingReview.userId !== userId) {
       // TODO: Error handling
+      let notUserReviewError = new Error("Forbidden: This is not your review");
+      notUserReviewError.status = 403;
+      throw notUserReviewError;
     }
 
     // Editing the keys that we want to update
@@ -129,15 +134,13 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res, next) => {
       let noExistingReviewError = new Error("Review couldn't be found");
       noExistingReviewError.status = 404;
       throw noExistingReviewError;
-      //return next(err);
     }
 
-    if (existingReview.userId !== userId) {
+    if (existingReview.userId !== userId) {// 
       // TODO: Error handling
       let notUserReviewError = new Error("Forbidden: This is not your review");
       notUserReviewError.status = 403;
       throw notUserReviewError;
-      //return next(err)
     }
 
     // Deletes a review
