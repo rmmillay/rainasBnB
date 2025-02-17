@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../../utils/auth');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult} = require('express-validator');
 const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models');
-
+const { handleValidationErrors } = require('../../utils/validation');
 
 
 
@@ -11,10 +11,19 @@ const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models'
 // Validation middleware for review data
 // TODO: Do this validation
 const validateReview = [
+  check('review')
+    .exists({ checkFalsy: true })
+    .isLength({min:3, max:256})
+    .withMessage('Review text is required'),
+  check('stars')
+    .exists({ checkFalsy: true })
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Starts must be an integer from 1 to 5'),
+  handleValidationErrors
 ];
 
 // Add a Review Image to an existing Review based on Review Id (user auth required)
-router.post('/:id/images', requireAuth, async (req, res, next) => {
+router.post('/:id/images',requireAuth, async (req, res, next) => {
   try{
     // TODO: Do this route
     return res.json(":)")
@@ -86,10 +95,19 @@ router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res) =
 
     if (!existingReview) {
       // TODO: Error handling
+      const invalidReview = new Error("Bad Request");
+      invalidReview.status = 400;
+      invalidReview.errors = {
+        "review": "Review text is required",
+        "stars": "Stars must be an integer from 1 to 5"
+      }
     }
 
     if (existingReview.userId !== userId) {
       // TODO: Error handling
+      const error = new Error("Review couldn't be found");
+            error.status = (404);
+            throw error;
     }
 
     // Editing the keys that we want to update
@@ -115,10 +133,16 @@ router.delete('/reviews/:reviewId', requireAuth, async (req, res) => {
 
     if (!existingReview) {
       // TODO: Error handling
+      const invalidReview = new Error("Review couldn't be found");
+      error.status(404);
+        throw error;
     }
 
     if (existingReview.userId !== userId) {
       // TODO: Error handling
+      const invalidReview = new Error("Review couldn't be found");
+      error.status(404);
+      throw error;
     }
 
     // Deletes a review
