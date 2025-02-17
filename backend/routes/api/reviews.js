@@ -11,6 +11,12 @@ const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models'
 // Validation middleware for review data
 // TODO: Do this validation
 const validateReview = [
+  check('review')
+  .exists({ checkFalsy: true })
+  .withMessage('Review text is required'),
+check('stars')
+  .exists({ checkFalsy: true })
+  .withMessage('Stars must be an integer from 1 to 5'),
 ];
 
 // Add a Review Image to an existing Review based on Review Id (user auth required)
