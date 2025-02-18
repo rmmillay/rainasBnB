@@ -41,6 +41,10 @@ const validateSpot = [
   check('price')
     .exists({ checkFalsy: true })
     .withMessage('Price per day must be a positive number.'),
+  check('ownerId')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 3, max: 256 })
+    .withMessage('owner Id is required'),
   handleValidationErrors
 ];
 
@@ -161,6 +165,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
+
+
 // Get spots by owner id
 router.get('/currentUser', requireAuth, async (req, res) => {
   try {
@@ -168,14 +175,39 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 
     const ownerId = req.user.id;
     const spot = await Spot.findAll({
-      where: { ownerId }
+      where: { ownerId },
+
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName']
+        },
+        {
+          model: Spot,
+          attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price'],
+        }
+      ]
     });
+    
+    if (!spot) {
+      let noExistingSpotError = new Error("Spot couldn't be found");
+      noExistingSpotError.status = 404;
+      throw noExistingSpotError;
+    }
+
+    if (Spot.userId !== userId) {
+      let notUserSpotError = new Error(" This is not your spot");
+      notUserSpotError.status = 403;
+      throw notUserSpotError;
+    }
 
     return res.status(200).json(spot);
   } catch (error) {
     next(error);
   }
 });
+
+
 
 
 
@@ -215,17 +247,52 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
 
 
 // Edit a spot
-router.put('/:id', requireAuth, validateSpot, async (req, res) => {
-  // TODO: Do this route
-  return res.json(":)")
+// Complete route /api/spots/:spotId
+router.put('/:id', requireAuth, validateSpot, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+   
+    const existingSpot = await Spot.findByPk(id);
+    if (!existingSpot) {
+      const error = new Error("Spot couldn't be found");
+      error.status = 404;
+      throw error;
+    }
+
+    if (existingSpot.ownerId !== userId) {
+      const error = new Error("Forbidden");
+      error.status = 403;
+      throw error;
+    }
+    
+    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+    existingSpot.address = address;
+    existingSpot.city = city;
+    existingSpot.state = state;
+    existingSpot.country = country;
+    existingSpot.lat = lat;
+    existingSpot.lng = lng;
+    existingSpot.name = name;
+    existingSpot.description = description;
+    existingSpot.price = price;
+
+    await existingSpot.save();
+
+    return res.status(200).json(existingSpot);
+  } catch (error) {
+    next(error);
+  }
 });
+
+
 
 // Delete a spot
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
-  const spotId = req.params.spotId;
-  const userId = req.user.id;
-
   try {
+      const { spotId } = req.params;
+  const userId = req.user.id;
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
@@ -412,3 +479,4 @@ module.exports = router;
 //   // Push all our pretty reviews into our tracker on line 139
 //   prettyReviews.push(prettyReview);
 // }
+
