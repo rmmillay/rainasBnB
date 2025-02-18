@@ -266,20 +266,20 @@ router.put('/:id', requireAuth, validateSpot, async (req, res, next) => {
 // Delete a spot
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
   try {
-      const { spotId } = req.params;
-  const userId = req.user.id;
+    const { spotId } = req.params;
+    const userId = req.user.id;
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
       const err = new Error("Spot couldn't be found");
       err.status = 404;
-      return next(err);
+      throw err;
     }
 
     if (spot.ownerId !== userId) {
       const err = new Error('Forbidden');
       err.status = 403;
-      return next(err);
+      throw err;
     }
 
     await spot.destroy();
@@ -346,7 +346,7 @@ router.get('/:id/reviews', async (req, res, next) => {
 
     // Find the spot
     const spot = await Spot.findByPk(spotId);
-    if(!spot){
+    if (!spot) {
       const noResourceError = new Error("Spot couldn't be found");
       noResourceError.status = 404;
       throw noResourceError;
