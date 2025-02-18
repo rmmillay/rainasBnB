@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../../utils/auth');
 const { check, validationResult } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
 const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models');
-
+const { handleValidationErrors } = require('../../utils/validation');
 
 
 
@@ -13,19 +12,18 @@ const { Spot, Review, User, ReviewImage, SpotImage } = require('../../db/models'
 // TODO: Do this validation
 const validateReview = [
   check('review')
-    .exists({ checkFalsy: true })
-    .isLength({ min: 3, max: 256 })
-    .withMessage('Review text is required'),
+  .exists({ checkFalsy: true })
+  .withMessage('Review text is required'),
   check('stars')
     .exists({ checkFalsy: true })
-    .isLength({ min: 1, max: 5 })
-    .withMessage('Stars must be an integer from 1 to 5'),
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Starts must be an integer from 1 to 5'),
   handleValidationErrors
 ];
 
 // Add a Review Image to an existing Review based on Review Id (user auth required)
-router.put('/:id/images', requireAuth, async (req, res, next) => {
-  try {
+router.post('/:id/images',requireAuth, async (req, res, next) => {
+  try{
     // TODO: Do this route
 
     const { reviewId } = req.params;
