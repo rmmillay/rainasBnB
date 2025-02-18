@@ -16,7 +16,7 @@ const { Booking, User, Spot, SpotImage } = require('../../db/models');
 // Complete route /api/bookings/current
 // Get all of the Current User's Booking
 
-router.get('/current', async (req, res, next) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   try {
     res.status(200);
 
@@ -24,15 +24,14 @@ router.get('/current', async (req, res, next) => {
 
     const bookings = await Booking.findAll({
       where: { userId },
-      attributes: ["id", "spotID"],
+      attributes: ["id", "spotId"],
       include: [
         {
           model: Spot,
           attributes: [
             "id", "ownerId", "address", "city", "state", "country",
             "lat", "lng", "name", "price"
-          ],
-
+          ]
         }
       ]
     });
