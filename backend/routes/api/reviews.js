@@ -67,9 +67,8 @@ router.post('/:id/images',requireAuth, async (req, res, next) => {
   }
 });
 
-
 // Route to get all reviews written by the current user
-router.get('/reviews/current', requireAuth, async (req, res,) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   try {
     const userId = req.user.id;
     const reviews = await Review.findAll({
@@ -119,7 +118,7 @@ router.get('/reviews/current', requireAuth, async (req, res,) => {
 
 
 // Route to update an existing review
-router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, next) => {
+router.put('/:reviewId', requireAuth, validateReview, async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const { review, stars } = req.body;
@@ -155,7 +154,7 @@ router.put('/reviews/:reviewId', requireAuth, validateReview, async (req, res, n
 });
 
 // Route to delete an existing review
-router.delete('/reviews/:reviewId', requireAuth, async (req, res, next) => {
+router.delete('/:reviewId', requireAuth, async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const userId = req.user.id;
