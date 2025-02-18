@@ -23,7 +23,7 @@ const isProduction = environment === 'production';
 // --Express--
 const app = express();
 
-// --Middlewares-- 
+// --Middlewares--
 app.use(morgan('dev')); // security
 app.use(cookieParser()); // parse cookies from headers
 app.use(express.json()); // allows use of json in req/res
@@ -87,7 +87,7 @@ app.use((err, _req, res, _next) => {
     title: err.title || 'Server Error',
     message: err.message,
     errors: err.errors,
-    stack: isProduction ? null : err.stack
+    // stack: isProduction ? null : err.stack
   });
 });
 
