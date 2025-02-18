@@ -34,6 +34,7 @@ const validateSpot = [
     .withMessage('Longitude must be within -180 and 180.'),
   check('name')
     .exists({ checkFalsy: true })
+    .isLength({ max: 50 })
     .withMessage('Name must be less than 50 characters.'),
   check('description')
     .exists({ checkFalsy: true })
@@ -188,7 +189,7 @@ router.get('/currentUser', requireAuth, async (req, res) => {
         }
       ]
     });
-    
+
     if (!spot) {
       let noExistingSpotError = new Error("Spot couldn't be found");
       noExistingSpotError.status = 404;
@@ -252,7 +253,7 @@ router.put('/:id', requireAuth, validateSpot, async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-   
+
     const existingSpot = await Spot.findByPk(id);
     if (!existingSpot) {
       const error = new Error("Spot couldn't be found");
@@ -265,7 +266,7 @@ router.put('/:id', requireAuth, validateSpot, async (req, res, next) => {
       error.status = 403;
       throw error;
     }
-    
+
     const { address, city, state, country, lat, lng, name, description, price } = req.body;
 
     existingSpot.address = address;
@@ -308,7 +309,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
     }
 
     await spot.destroy();
-    res.json({ message: "Successfully deleted" });
+    return res.json({ message: "Successfully deleted" });
   } catch (e) {
     next(e);
   }
@@ -479,4 +480,3 @@ module.exports = router;
 //   // Push all our pretty reviews into our tracker on line 139
 //   prettyReviews.push(prettyReview);
 // }
-
