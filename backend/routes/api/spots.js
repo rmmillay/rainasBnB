@@ -168,7 +168,9 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
     const ownerId = req.user.id;
     const spot = await Spot.findAll({
-      where: { ownerId },
+      where: {
+        ownerId: parseInt(ownerId)
+      },
       attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price'],
       include: [
         {
@@ -209,7 +211,7 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
       throw invalidSpotId;
     }
     const newImage = await SpotImage.create({
-      spotId,
+      spotId: parseInt(spotId),
       url,
       preview,
     });
