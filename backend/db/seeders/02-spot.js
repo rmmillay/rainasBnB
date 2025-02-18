@@ -29,8 +29,8 @@ module.exports = {
         city: "bikini top",
         state: "alaska",
         country: "usa",
-        lat: 40.8977,
-        lng: -87.0365,
+        lat: 35.7646358,
+        lng: -120.7730327,
         name: "code editor",
         description: "Best place to code",
         price: 90.00
@@ -41,8 +41,8 @@ module.exports = {
         city: "New York City",
         state: "New York",
         country: "usa",
-        lat: 34.8977,
-        lng: -65.0365,
+        lat: 31.7646358,
+        lng: -128.7730327,
         name: "A cool group",
         description: "A place where people have fun",
         price: 69.00
@@ -52,8 +52,8 @@ module.exports = {
         city: "Buffalo",
         state: "New York",
         country: "usa",
-        lat: 58.8977,
-        lng: -59.0365,
+        lat: 35.7646359,
+        lng: -120.7730322,
         name: "A cold group",
         description: "Come here if you want to enjoy snow",
         price: 56.00
@@ -63,8 +63,8 @@ module.exports = {
         city: "Concrete Jungle",
         state: "New York",
         country: "usa",
-        lat: 35.8974,
-        lng: -69.0365,
+        lat: 35.2246358,
+        lng: -127.3330327,
         name: "Santa's hood",
         description: "Heaven is a place on Earth",
         price: 40.00
