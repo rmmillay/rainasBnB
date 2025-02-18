@@ -12,9 +12,8 @@ const { handleValidationErrors } = require('../../utils/validation');
 // TODO: Do this validation
 const validateReview = [
   check('review')
-    .exists({ checkFalsy: true })
-    .isLength({min:3, max:256})
-    .withMessage('Review text is required'),
+  .exists({ checkFalsy: true })
+  .withMessage('Review text is required'),
   check('stars')
     .exists({ checkFalsy: true })
     .isInt({ min: 1, max: 5 })

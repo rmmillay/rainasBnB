@@ -214,12 +214,34 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 // Add a Spot Image to an existing Spot based on Spot ID (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
   try {
-    // TODO: Do this route
-    return res.json(":)")
-  } catch (e) {
-    next(e);
+    const spotId = req.params.spotId;
+    const { url, preview } = req.body;
+    const spot = await Spot.findByPk(spotId);
+    if (spot !== null) {
+      const invalidSpotId = new Error("Spot couldn't be found");
+      invalidSpotId.status = 404;
+      throw invalidSpotId;
+    }
+    const newImage = await SpotImage.createImage({
+      spotId,
+      url,
+      preview,
+      where: {
+        preview: true
+      }
+    });
+    return res.status(201).json(newImage);
+  } catch (error) {
+    next(error);
   }
 });
+
+// TODO: Do this route
+//   return res.json(":)")
+// catch(e){
+//   next(e);
+// }
+
 
 
 
@@ -457,3 +479,4 @@ module.exports = router;
 //   // Push all our pretty reviews into our tracker on line 139
 //   prettyReviews.push(prettyReview);
 // }
+
