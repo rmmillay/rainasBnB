@@ -130,7 +130,7 @@ router.get('/', async (req, res) => {
     const spots = await Spot.findAll();
     return res.json(spots);
   } catch (error) {
-   next(error);
+    next(error);
   }
 });
 
@@ -181,10 +181,10 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 
 // Add a Spot Image to an existing Spot based on Spot ID (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
-  try{
+  try {
     // TODO: Do this route
     return res.json(":)")
-  } catch(e){
+  } catch (e) {
     next(e);
   }
 });
@@ -193,17 +193,52 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
 
 
 // Edit a spot
-router.put('/:id', requireAuth, validateSpot, async (req, res) => {
-  // TODO: Do this route
-  return res.json(":)")
+// Complete route /api/spots/:spotId
+router.put('/:id', requireAuth, validateSpot, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+   
+    const existingSpot = await Spot.findByPk(id);
+    if (!existingSpot) {
+      const error = new Error("Spot couldn't be found");
+      error.status = 404;
+      throw error;
+    }
+
+    if (existingSpot.ownerId !== userId) {
+      const error = new Error("Forbidden");
+      error.status = 403;
+      throw error;
+    }
+    
+    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+    existingSpot.address = address;
+    existingSpot.city = city;
+    existingSpot.state = state;
+    existingSpot.country = country;
+    existingSpot.lat = lat;
+    existingSpot.lng = lng;
+    existingSpot.name = name;
+    existingSpot.description = description;
+    existingSpot.price = price;
+
+    await existingSpot.save();
+
+    return res.status(200).json(existingSpot);
+  } catch (error) {
+    next(error);
+  }
 });
+
+
 
 // Delete a spot
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
-  const spotId = req.params.spotId;
-  const userId = req.user.id;
-
   try {
+      const { spotId } = req.params;
+  const userId = req.user.id;
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
@@ -311,82 +346,82 @@ module.exports = router;
 
 
 
-    // --------------- THIS IS HOW WE GET QUERIES USING JAVASCRIPT ------
-    // NOT VERY EFFICIENT IN TERMS OF PERFORMANCE, BUT GREAT FOR SMALL PROJECTS AND SPRINTS
-    // const resReviews = [];
+// --------------- THIS IS HOW WE GET QUERIES USING JAVASCRIPT ------
+// NOT VERY EFFICIENT IN TERMS OF PERFORMANCE, BUT GREAT FOR SMALL PROJECTS AND SPRINTS
+// const resReviews = [];
 
-    // // Loop through all the reviews
-    // for(let review of reviews){
-    //   // Method to turn ugly sequelize objects into pretty javascript objrects
-    //   const prettyReview = await review.toJSON();
-    //   // console.log("This is one singular review", prettyReview)
-    //   // Grab the id from the prettyReview object and use it to get the User associated to that id
-    //   let userId = prettyReview.userId;
-    //   const userObj = await User.findByPk(userId);
-    //   const prettyUser = await userObj.toJSON();
-    //   // console.log(prettyUser, "this is the user who made the review");
-    //   prettyReview["User"] = prettyUser
-    //   resReviews.push(prettyReview);
-    //   // console.log("This is one singular review", prettyReview)
-    // }
-
-
-    // TODO
-    // - GET RID OF THE USERNAME FROM THE RETURN
-    // - GET RID OF THE REVIEWID
-    // - GET RID OF THE CREATEDAT AND UPDATEDAT
+// // Loop through all the reviews
+// for(let review of reviews){
+//   // Method to turn ugly sequelize objects into pretty javascript objrects
+//   const prettyReview = await review.toJSON();
+//   // console.log("This is one singular review", prettyReview)
+//   // Grab the id from the prettyReview object and use it to get the User associated to that id
+//   let userId = prettyReview.userId;
+//   const userObj = await User.findByPk(userId);
+//   const prettyUser = await userObj.toJSON();
+//   // console.log(prettyUser, "this is the user who made the review");
+//   prettyReview["User"] = prettyUser
+//   resReviews.push(prettyReview);
+//   // console.log("This is one singular review", prettyReview)
+// }
 
 
-    /*
-     "Reviews": [
+// TODO
+// - GET RID OF THE USERNAME FROM THE RETURN
+// - GET RID OF THE REVIEWID
+// - GET RID OF THE CREATEDAT AND UPDATEDAT
+
+
+/*
+ "Reviews": [
+    {
+      "id": 1, ---
+      "userId": 1, ---
+      "spotId": 1, ---
+      "review": "This was an awesome spot!", ----
+      "stars": 5, ----
+      "createdAt": "2021-11-19 20:39:36", ----
+      "updatedAt": "2021-11-19 20:39:36", -----
+      "User": { ---
+        "id": 1, ---
+        "firstName": "John", ---
+        "lastName": "Smith" ---
+      },
+      "ReviewImages": [ --
         {
           "id": 1, ---
-          "userId": 1, ---
-          "spotId": 1, ---
-          "review": "This was an awesome spot!", ----
-          "stars": 5, ----
-          "createdAt": "2021-11-19 20:39:36", ----
-          "updatedAt": "2021-11-19 20:39:36", -----
-          "User": { ---
-            "id": 1, ---
-            "firstName": "John", ---
-            "lastName": "Smith" ---
-          },
-          "ReviewImages": [ --
-            {
-              "id": 1, ---
-              "url": "image url" ---
-            }
-          ],
+          "url": "image url" ---
         }
-      ]
+      ],
+    }
+  ]
 
-    */
+*/
 
-    // ---------- CLEAN UP EACH REVIEW USING JAVASCRIPT ------------
-    // let prettyReviews = [];
+// ---------- CLEAN UP EACH REVIEW USING JAVASCRIPT ------------
+// let prettyReviews = [];
 
-    // for(let review of reviews){
-    //   // Make the review a javascript object
-    //   const prettyReview = review.toJSON();
-    //   // delete the username from the User object
-    //   delete prettyReview.User.username
+// for(let review of reviews){
+//   // Make the review a javascript object
+//   const prettyReview = review.toJSON();
+//   // delete the username from the User object
+//   delete prettyReview.User.username
 
-    //   // add all the reviewImage objects we want to keep into this array
-    //   const prettyReviewImages = [];
+//   // add all the reviewImage objects we want to keep into this array
+//   const prettyReviewImages = [];
 
-    //   // loop through each ReviewImages and delete them
-    //   for(let reviewImage of prettyReview.ReviewImages){
-    //     // delete the createdAt key from each reviewImage
-    //     delete reviewImage.createdAt;
-    //     // delete the updatedAt keyt from each reviewImage
-    //     delete reviewImage.updatedAt;
-    //     // Add our reviewImage (modified) to our storage array on line 148
-    //     prettyReviewImages.push(reviewImage);
+//   // loop through each ReviewImages and delete them
+//   for(let reviewImage of prettyReview.ReviewImages){
+//     // delete the createdAt key from each reviewImage
+//     delete reviewImage.createdAt;
+//     // delete the updatedAt keyt from each reviewImage
+//     delete reviewImage.updatedAt;
+//     // Add our reviewImage (modified) to our storage array on line 148
+//     prettyReviewImages.push(reviewImage);
 
-    //   }
-    //   // reassign the key-value of our reviewImages with the pretty version
-    //   prettyReview.ReviewImages = prettyReviewImages;
-    //   // Push all our pretty reviews into our tracker on line 139
-    //   prettyReviews.push(prettyReview);
-    // }
+//   }
+//   // reassign the key-value of our reviewImages with the pretty version
+//   prettyReview.ReviewImages = prettyReviewImages;
+//   // Push all our pretty reviews into our tracker on line 139
+//   prettyReviews.push(prettyReview);
+// }
