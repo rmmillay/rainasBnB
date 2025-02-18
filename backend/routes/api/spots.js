@@ -169,16 +169,12 @@ router.get('/current', requireAuth, async (req, res, next) => {
     const ownerId = req.user.id;
     const spot = await Spot.findAll({
       where: { ownerId },
-
+      attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price'],
       include: [
         {
           model: User,
           attributes: ['id', 'firstName', 'lastName']
         },
-        {
-          model: Spot,
-          attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price'],
-        }
       ]
     });
 
@@ -188,7 +184,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
       throw noExistingSpotError;
     }
 
-    if (Spot.userId !== userId) {
+    if (Spot.userId !== ownerId) {
       let notUserSpotError = new Error(" This is not your spot");
       notUserSpotError.status = 403;
       throw notUserSpotError;
@@ -204,7 +200,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
 // Add a Spot Image to an existing Spot based on Spot ID (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
   try {
-    const spotId = req.params.spotId;
+    const spotId = req.params.id;
     const { url, preview } = req.body;
     const spot = await Spot.findByPk(spotId);
     if (spot !== null) {
@@ -324,7 +320,7 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
     if (!userReview) {
       // Create the new Review
       const newReview = await Review.create({ userId, spotId, review, stars });
-      res.status(201);
+      res.status(200);
       return res.json(newReview);
     } else {
       // TODO: Edit this error message and status code based on api docs
@@ -343,9 +339,17 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
 // Get all reviews belonging to a spot based on spot id
 router.get('/:id/reviews', async (req, res, next) => {
   try {
-    res.status(201);
 
     const spotId = req.params.id;
+
+    // Find the spot
+    const spot = await Spot.findByPk(spotId);
+    if(!spot){
+      const noResourceError = new Error("Spot couldn't be found");
+      noResourceError.status = 404;
+      throw noResourceError;
+    }
+
     // SEQUELIZE ---- GRABBING DATA FROM THE DATABASE -> crosses the bridge -> DATABASE
     const reviews = await Review.findAll({
       where: {
@@ -364,6 +368,7 @@ router.get('/:id/reviews', async (req, res, next) => {
       ]
     });
 
+    res.status(201);
     return res.json({ Reviews: reviews });
     // return res.json({Reviews: prettyReviews});
   } catch (error) {
