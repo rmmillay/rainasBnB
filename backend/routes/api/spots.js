@@ -41,6 +41,10 @@ const validateSpot = [
   check('price')
     .exists({ checkFalsy: true })
     .withMessage('Price per day must be a positive number.'),
+  check('ownerId')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 3, max: 256 })
+    .withMessage('owner Id is required'),
   handleValidationErrors
 ];
 
@@ -161,6 +165,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
+
+
 // Get spots by owner id
 router.get('/currentUser', requireAuth, async (req, res) => {
   try {
@@ -168,14 +175,39 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 
     const ownerId = req.user.id;
     const spot = await Spot.findAll({
-      where: { ownerId }
+      where: { ownerId },
+
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName']
+        },
+        {
+          model: Spot,
+          attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price'],
+        }
+      ]
     });
+    
+    if (!spot) {
+      let noExistingSpotError = new Error("Spot couldn't be found");
+      noExistingSpotError.status = 404;
+      throw noExistingSpotError;
+    }
+
+    if (Spot.userId !== userId) {
+      let notUserSpotError = new Error(" This is not your spot");
+      notUserSpotError.status = 403;
+      throw notUserSpotError;
+    }
 
     return res.status(200).json(spot);
   } catch (error) {
     next(error);
   }
 });
+
+
 
 
 
