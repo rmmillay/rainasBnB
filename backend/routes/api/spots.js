@@ -13,10 +13,6 @@ const validateSpot = [
     .exists({ checkFalsy: true })
     .notEmpty()
     .withMessage('Street address is required'),
-  check('address')
-    .exists({ checkFalsy: true })
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Street must be bigger than 2 letters'),
   check('city')
     .exists({ checkFalsy: true })
     .withMessage('City is required.'),
@@ -42,10 +38,6 @@ const validateSpot = [
   check('price')
     .exists({ checkFalsy: true })
     .withMessage('Price per day must be a positive number.'),
-  check('ownerId')
-    .exists({ checkFalsy: true })
-    .isLength({ min: 3, max: 256 })
-    .withMessage('owner Id is required'),
   handleValidationErrors
 ];
 
@@ -130,7 +122,7 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
 
 
 // Get All spots --- dont worry about queries and pagination
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const spots = await Spot.findAll();
     return res.json(spots);
@@ -141,7 +133,7 @@ router.get('/', async (req, res) => {
 
 
 // Get Spot by id
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const spot = await Spot.findByPk(req.params.id,
       {
@@ -170,7 +162,7 @@ router.get('/:id', async (req, res) => {
 
 
 // Get spots by owner id
-router.get('/currentUser', requireAuth, async (req, res) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   try {
     // TODO: add validations and error handling to this route
 
@@ -209,9 +201,6 @@ router.get('/currentUser', requireAuth, async (req, res) => {
 });
 
 
-
-
-
 // Add a Spot Image to an existing Spot based on Spot ID (user auth required)
 router.post('/:id/images', requireAuth, async (req, res, next) => {
   try {
@@ -223,29 +212,16 @@ router.post('/:id/images', requireAuth, async (req, res, next) => {
       invalidSpotId.status = 404;
       throw invalidSpotId;
     }
-    const newImage = await SpotImage.createImage({
+    const newImage = await SpotImage.create({
       spotId,
       url,
       preview,
-      where: {
-        preview: true
-      }
     });
     return res.status(201).json(newImage);
   } catch (error) {
     next(error);
   }
 });
-
-// TODO: Do this route
-//   return res.json(":)")
-// catch(e){
-//   next(e);
-// }
-
-
-
-
 
 // Edit a spot
 // Complete route /api/spots/:spotId
