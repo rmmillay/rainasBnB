@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       ownerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
 
       address: {
@@ -80,23 +80,23 @@ module.exports = (sequelize, DataTypes) => {
       lat: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        unique: true,
-        validate: {
-          isDecimal: true,
-          min: -90,
-          max: 90,
-        },
+        unique: false,
+        // validate: {
+        //   isDecimal: true,
+        //   min: -90,
+        //   max: 90,
+        // },
       },
 
       lng: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        unique: true,
-        validate: {
-          isDecimal: true,
-          min: -180,
-          max: 180,
-        },
+        unique: false,
+        // validate: {
+        //   isDecimal: true,
+        //   min: -180,
+        //   max: 180,
+        // },
       },
 
       name: {
@@ -122,16 +122,6 @@ module.exports = (sequelize, DataTypes) => {
           isDecimal: true
         }
       },
-      createdAt: {
-        type: DataTypes.DATE
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        validate: {
-          len: [3, 256]
-        },
-      },
-
     },
 
     {

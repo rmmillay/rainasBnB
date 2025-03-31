@@ -9,7 +9,7 @@ module.exports = {
       schema: process.env.SCHEMA,
       host: process.env.DB_HOST
     },
-    // dbFile: process.env.DB_FILE,
+    dbFile: process.env.DB_FILE,
     jwtConfig: {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES_IN

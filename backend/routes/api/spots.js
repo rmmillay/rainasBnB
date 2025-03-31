@@ -22,12 +22,12 @@ const validateSpot = [
   check('country')
     .exists({ checkFalsy: true })
     .withMessage('Country is required.'),
-  check('lat')
-    .exists({ checkFalsy: true })
-    .withMessage('Latitud must be within -90 and 90.'),
-  check('lng')
-    .exists({ checkFalsy: true })
-    .withMessage('Longitude must be within -180 and 180.'),
+  // check('lat')
+  //   .exists({ checkFalsy: true })
+  //   .withMessage('Latitud must be within -90 and 90.'),
+  // check('lng')
+  //   .exists({ checkFalsy: true })
+    // .withMessage('Longitude must be within -180 and 180.'),
   check('name')
     .exists({ checkFalsy: true })
     .isLength({ max: 50 })
@@ -48,9 +48,10 @@ const validateSpot = [
 const validateReview = [
 ];
 
-// --Get All spots--
+// Get All spots --- dont worry about queries and pagination
+
 router.get('/', async (req, res, next) => {
-  try {
+  try { 
     const spots = await Spot.findAll({
       attributes: ["id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "description", "price", "createdAt", "updatedAt"],
       include: [
@@ -68,12 +69,12 @@ router.get('/', async (req, res, next) => {
 
     for (let spot of spots) {
       const spotObj = await spot.toJSON();
-      console.log(spotObj)
+      console.error(spotObj)
       // gett the average of all the reviews per spot
       let sum = 0;
       for (let i = 0; i < spotObj.Reviews.length; i++) {
         let review = spotObj.Reviews[i];
-        console.log(review);
+        console.error(review);
         sum += review.stars;
       }
       const avgRating = sum / spotObj.Reviews.length;
@@ -105,7 +106,7 @@ router.get('/', async (req, res, next) => {
 router.post('/', requireAuth, validateSpot, async (req, res, next) => {
   try {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
-    console.log(address, city, state, country, lat, lng, name, description, price)
+    console.error(address, city, state, country, lat, lng, name, description, price)
 
     const newSpot = await Spot.create({
       ownerId: req.user.id,
@@ -121,15 +122,6 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
 });
 
 
-// Get All spots --- dont worry about queries and pagination
-router.get('/', async (req, res, next) => {
-  try {
-    const spots = await Spot.findAll();
-    return res.json(spots);
-  } catch (error) {
-    next(error);
-  }
-});
 
 
 // Get Spot by id
@@ -295,7 +287,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
   try {
     // How do I grab the spot id that was used on postman
-    // req.paramgs is an object of parameters
+    // req.params is an object of parameters
     // This is one way to grab it
     // const spotId = req.params.spotId
     const { spotId } = req.params;
@@ -374,7 +366,7 @@ router.get('/:id/reviews', async (req, res, next) => {
     return res.json({ Reviews: reviews });
     // return res.json({Reviews: prettyReviews});
   } catch (error) {
-    console.log("starting point")
+    console.error("starting point")
     next(error);
   }
 })

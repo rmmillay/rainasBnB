@@ -35,6 +35,36 @@ module.exports = {
                 startDate: '2022-05-30',
                 endDate: '2022-06-04'
             },
+            {
+                spotId: 6,
+                userId: 4,
+                startDate: '2022-05-30',
+                endDate: '2022-06-04'
+            },
+            {
+                spotId: 7,
+                userId: 5,
+                startDate: '2022-05-30',
+                endDate: '2022-06-04'
+            },
+            {
+                spotId: 8,
+                userId: 6,
+                startDate: '2022-05-30',
+                endDate: '2022-06-04'
+            },
+            {
+                spotId: 9,
+                userId: 7,
+                startDate: '2022-05-30',
+                endDate: '2022-06-04'
+            },
+            {
+                spotId: 10,
+                userId: 8,
+                startDate: '2022-05-30',
+                endDate: '2022-06-04'
+            },
 
         ], { validate: true });
 

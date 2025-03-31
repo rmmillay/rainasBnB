@@ -12,7 +12,6 @@ module.exports = (sequelize) => {
                 onDelete: "CASCADE",
                 hooks: true
             });
-
         }
     }
     SpotImage.init({

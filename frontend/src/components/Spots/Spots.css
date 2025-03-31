@@ -1,0 +1,53 @@
+.spot-text{
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+
+}
+
+.card-list-container{
+    margin-right: 5%;
+    background-color:darksalmon;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    /* align-items: flex-end; */
+    padding-top: 20px;
+}
+
+ 
+.card-container{
+    cursor: pointer   
+}
+
+.info-container{
+    padding-inline: 3px;
+}
+
+.top-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bottom-container{
+    gap: 10px;
+}
+
+.spot-price{
+    padding-right: 5px;
+    font-weight: 600;
+}
+
+.heading {
+    /* align-items: flex-end; */
+    padding-top: 9%;
+    padding-bottom: 2%;
+    font-size: 50px;
+    color:indianred;
+    flex-direction: row; 
+    /* justify-content: center;
+    align-items: center; */
+    justify-content:space-evenly
+}

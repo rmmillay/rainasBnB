@@ -1,8 +1,43 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import * as sessionActions from './store/session';
+import LoginFormModal from './components/LoginFormModal/LoginFormModal';
+import SignupFormModal from './components/SignupFormModal/SignupFormModal';
+import Spots from './components/Spots';
+import SpotDetail from './components/SpotDetail/SpotDetail';
+import CreateSpot from './components/CreateSpot/CreateSpot';
+
+
+export const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: '/',
+        element: <Spots />,
+      },
+      {
+        path: 'login',
+        element: <LoginFormModal />,
+      },
+      {
+        path: 'signup', 
+        element: <SignupFormModal />,
+      },
+      {
+        path: '/spots/:id',
+        element: <SpotDetail/>,
+      },
+      {
+        path: '/spots/create',
+        element: <CreateSpot/>,
+      },
+    ],
+  },
+]);
+
 
 function Layout() {
   const dispatch = useDispatch();
@@ -22,17 +57,7 @@ function Layout() {
   );
 }
 
-const router = createBrowserRouter([
-  {
-    element: <Layout />,
-    children: [
-      {
-        path: '/',
-        element: <h1>Welcome!</h1>
-      }
-    ]
-  }
-]);
+
 
 function App() {
   return <RouterProvider router={router} />;

@@ -21,7 +21,7 @@ module.exports = {
       },
       {
         firstName: 'patrick',
-        lastName: 'start',
+        lastName: 'star',
         email: 'star@user.io',
         username: 'pstar',
         hashedPassword: bcrypt.hashSync('password')
@@ -33,6 +33,57 @@ module.exports = {
         username: 'spongebob123',
         hashedPassword: bcrypt.hashSync('password')
       },
+      {
+        firstName: 'spongebo',
+        lastName: 'squarepant',
+        email: 'spongeboby@user.io',
+        username: 'spongebob13',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'cheeda',
+        lastName: 'getta',
+        email: 'cheddathagettab@user.io',
+        username: 'cheddsman123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'guap',
+        lastName: 'lord',
+        email: 'yomanguap@user.io',
+        username: 'guaps123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'cheddss',
+        lastName: 'guapp',
+        email: 'guap2@user.io',
+        username: 'guap2lord123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'cheddsss',
+        lastName: 'guappp',
+        email: 'guap3@user.io',
+        username: 'guap3lord123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'cheddsuv',
+        lastName: 'guapufgu',
+        email: 'guap4@user.io',
+        username: 'guap4lord123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+      {
+        firstName: 'cheddsjkjk',
+        lastName: 'guapgg',
+        email: 'guap5@user.io',
+        username: 'guap5lord123',
+        hashedPassword: bcrypt.hashSync('password')
+      },
+
+
     ], { validate: true });
   },
 

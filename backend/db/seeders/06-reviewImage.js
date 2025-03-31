@@ -30,6 +30,26 @@ module.exports = {
                 url: "https://reviewImage5",
                 reviewId: 2
             },
+            {
+                url: "https://reviewImage5",
+                reviewId: 6
+            },
+            {
+                url: "https://reviewImage5",
+                reviewId: 7
+            },
+            {
+                url: "https://reviewImage5",
+                reviewId: 8
+            },
+            {
+                url: "https://reviewImage5",
+                reviewId: 9
+            },
+            {
+                url: "https://reviewImage5",
+                reviewId: 10
+            },
 
         ], { validate: true });
     },
