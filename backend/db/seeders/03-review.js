@@ -61,7 +61,7 @@ module.exports = {
       {
         userId: 9,
         spotId: 7,
-        review: 'but what about the yeet?',
+        review: 'but what about the yeet tho?',
         stars: 1,
       },
       {
