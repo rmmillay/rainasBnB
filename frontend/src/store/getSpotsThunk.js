@@ -12,7 +12,7 @@ const EDIT_A_SPOT = '/spotCards/spotId';
   // Action Creators
 
 const getAllSpotsAction = (data) => ({
-    type: GET_ALL_SPOTS,
+    type: GET_ALL_SPOTS
     payload: data
 })
 
