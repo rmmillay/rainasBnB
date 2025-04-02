@@ -12,7 +12,7 @@ const SpotDetail = () => {
     const spot = useSelector((state) => state.spotsReducer.byId[id]);
     const dispatch = useDispatch();
 
-    console.log(spot)
+    // console.log(spot)
 
   const [isLoaded, setIsLoaded] = useState(false);
   

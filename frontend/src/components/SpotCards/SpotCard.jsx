@@ -6,14 +6,14 @@ import './SpotCard.css';
 
 
 const SpotCard = ({spot}) => {
-  console.log(spot) 
+  // console.log(spot) 
 
     if(spot && spot.previewImage){
   
   return ( 
     <div className="card-container"> 
       <div>
-        <NavLink to={'/spots/SpotCard'} />
+        <NavLink to={'/spots/:id'} />
       </div>
       <div className="spotImage-container">
         <img className="spotImage" src={spot.previewImage} />

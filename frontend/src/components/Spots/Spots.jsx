@@ -16,7 +16,7 @@ const Spots = () => {
 
   const spots = useSelector((state) => state.spotsReducer.Spots);
   const spotsArr = Object.values(spots)
-  console.log(spots)
+  // console.log(spots)
   
   const [isLoaded, setIsLoaded] = useState(false);
  
@@ -56,7 +56,7 @@ const Spots = () => {
             key={`${idx}-${spot.id}`}
             onClick={(e)=> goToSpotDetail(e, spot)}>
               <SpotCard spot={spot} />
-              {console.log(spot)}
+              {/* {console.log(spot)} */}
             </div>
           ))
         }
@@ -90,7 +90,7 @@ export default Spots;
 //       <div className="">
 //         {spots?.map((ele,idx)=> (
 //         <div key={`${spots.id}--${idx}`} className="">
-//             {console.log(ele)}
+//             {(ele)}
 //             <NavLink to={'/'}>
 //              <img className="first-img"
 //              src={spots.previewImage ? '${spot.previewImage}' : ""}/>

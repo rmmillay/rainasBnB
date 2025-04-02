@@ -35,7 +35,7 @@ const editSpotAction = (data) => ({
 
 // GET SPOTS ----
 export const getSpotsThunk = () => async (dispatch) => {
-    console.log('we are here')
+    // console.log('we are here')
 
     try {
         const res = await csrfFetch('/api/spots');
@@ -45,7 +45,7 @@ export const getSpotsThunk = () => async (dispatch) => {
 
             const data = await res.json();
             dispatch(getAllSpotsAction(data.Spots))
-            console.log(data);
+            // console.log(data);
 
         } else {
             throw res;
@@ -66,7 +66,7 @@ export const createSpotThunk = (newSpot) => async (dispatch) => {
             // headers: { 'content-Type': 'application/json' },
             body: JSON.stringify(newSpot)
         }
-        const res = await csrfFetch('/api/spots/', options);
+        const res = await csrfFetch('/api/spots/create', options);
         if (res.ok) {
             const data = await res.json();
             dispatch(createSpotAction(data))
@@ -86,7 +86,7 @@ export const createSpotThunk = (newSpot) => async (dispatch) => {
 export const deleteSpotThunk = () => async (dispatch) => {
 
     try {
-        const res = await csrfFetch('/api/spots');
+        const res = await csrfFetch('/api/spots/:id/delete');
         if (res.ok) {
 
             const data = await res.json();
@@ -104,7 +104,7 @@ export const deleteSpotThunk = () => async (dispatch) => {
 export const editSpotsThunk = () => async (dispatch) => {
 
     try {
-        const res = await csrfFetch('/api/spots');
+        const res = await csrfFetch('/api/spots/:id/edit');
         if (res.ok) {
 
 
@@ -132,7 +132,7 @@ export const editSpotsThunk = () => async (dispatch) => {
 const spotsReducer = (state = initialState, action) => {
     let newState;
     switch (action.type) {
-        case GET_ALL_SPOTS:{
+        case GET_ALL_SPOTS: {
             const spotsArr = action.payload;
 
             //    Make a New Spot in Memory
@@ -154,21 +154,22 @@ const spotsReducer = (state = initialState, action) => {
             newState.byId = newByIdSpots
             return newState;
         }
-        case DELETE_A_SPOT: {
 
-            newState = { ...state }
-            let spot = action.payload
-            let newById = { ...newState.byId }
-            delete newById(spot.id)
+        // case DELETE_A_SPOT: {
 
-            newState.byId = newById
-            const newSpots = newState.Spots.filter(filteredSpot => {
-                return filteredSpot.id !== spot.id
-            })
+        //     newState = { ...state }
+        //     let spot = action.payload
+        //     let newById = { ...newState.byId }
+        //     delete newById(spot.id)
 
-            newState.Spots = newSpots;
-            return newState;
-        }
+        //     newState.byId = newById
+        //     const newSpots = newState.Spots.filter(filteredSpot => {
+        //         return filteredSpot.id !== spot.id
+        //     })
+
+        //     newState.Spots = newSpots;
+        //     return newState;
+        // }
         // case EDIT_A_SPOT: {
 
         //     newState = { ...state }
